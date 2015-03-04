@@ -1,0 +1,13 @@
+Package: genFun
+Type: Package
+Title: Functions for dealing with genetic data
+Version: 1.0
+Date: 2015-03-04
+Author: Clemens Baumbach
+Maintainer: Clemens Baumbach <clemens.baumbach@helmholtz-muenchen.de>
+Suggests: testthat
+Imports: miscFun (>= 1.0)
+Description: This is a collection of functions which, if not for this
+             package, I would have to rewrite or copy/paste for almost
+             every R script dealing with genetic data that I write.
+License: GPL (>= 2)

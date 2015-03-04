@@ -1,0 +1,3 @@
+import(miscFun)
+
+exportPattern("^[[:alpha:]]+")
