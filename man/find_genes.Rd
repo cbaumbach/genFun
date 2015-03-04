@@ -50,7 +50,9 @@ find_genes(d, genes, chr1 = "chr", pos = "pos", out = id, chr2 = chr1,
   `chr2', `start', `end', and `id'.  The order of SNPs and genes within
   the data frames is of no importance.  If a SNP does not belong to any
   of the genes, it will get a value of NA in the `out' column of the
-  resulting data frame.
+  resulting data frame.  NAs in relevant columns of the SNP data frame
+  lead to NAs in `out' column in output.  NAs in genes data frame are
+  dropped before SNPs are matched to genes.
 }
 \value{
   Returns a data frame like `d' but with an additional column called
