@@ -4,6 +4,23 @@ find_genes <- function(d, genes, chr1 = "chr", pos = "pos", out = id,
                        chr2 = chr1, start = "start", end = "end",
                        id = "id")
 {
+    ## Check whether all required column are present.
+    names1 <- names(d)
+    names2 <- names(genes)
+
+    if (! chr1 %in% names1)
+        stop("column missing in d: ", chr1)
+    if (! pos %in% names1)
+        stop("column missing in d: ", pos)
+    if (! chr2 %in% names2)
+        stop("column missing in genes: ", chr2)
+    if (! start %in% names2)
+        stop("column missing in genes: ", start)
+    if (! end %in% names2)
+        stop("column missing in genes: ", end)
+    if (! id %in% names2)
+        stop("column missing in genes: ", id)
+
     ## Drop rows with missings from genes.
     any_missings <- is.na(genes[[chr2]])  |
                     is.na(genes[[start]]) |
