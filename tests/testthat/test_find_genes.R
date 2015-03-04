@@ -57,3 +57,33 @@ rs4 3 4 NA
 
     expect_that(find_genes(d, genes), equals(dout))
 })
+
+test_that("NAs in genes data frame are ignored", {
+
+    d <- read.table(textConnection("\
+snp chr pos
+rs1 1 1
+rs2 1 5
+rs3 2 3
+rs4 3 4
+", "r"), header = TRUE, stringsAsFactors = FALSE)
+
+    genes <- read.table(textConnection("\
+id chr start end
+g1 NA 1 3
+g2 1 NA 6
+g3 2 1 4
+g4 4 1 NA
+", "r"), header = TRUE, stringsAsFactors = FALSE)
+
+    dout <- read.table(textConnection("\
+snp chr pos id
+rs1 1 1 NA
+rs2 1 5 NA
+rs3 2 3 g3
+rs4 3 4 NA
+", "r"), header = TRUE, stringsAsFactors = FALSE)
+
+    expect_that(find_genes(d, genes), equals(dout))
+})
+

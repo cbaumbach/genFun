@@ -4,6 +4,13 @@ find_genes <- function(d, genes, chr1 = "chr", pos = "pos", out = id,
                        chr2 = chr1, start = "start", end = "end",
                        id = "id")
 {
+    ## Drop rows with missings from genes.
+    any_missings <- is.na(genes[[chr2]])  |
+                    is.na(genes[[start]]) |
+                    is.na(genes[[end]])   |
+                    is.na(genes[[id]])
+    genes <- subset(genes, !any_missings)
+
     d[[out]] <- NA
     for (k in sort(unique(d[[chr1]]))) {
         idx <- d[[chr1]] == k
