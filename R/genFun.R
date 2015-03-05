@@ -1,6 +1,6 @@
 ## genFun.R
 
-find_genes <- function(d, genes, chr1 = "chr", pos = "pos", out = id,
+find_genes <- function(d, genes, chr1 = "chr", pos = "pos", out = "genes",
                        chr2 = chr1, start = "start", end = "end",
                        id = "id")
 {

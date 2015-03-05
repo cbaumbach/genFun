@@ -10,8 +10,8 @@
   that contain the given SNP.
 }
 \usage{
-find_genes(d, genes, chr1 = "chr", pos = "pos", out = id, chr2 = chr1,
-           start = "start", end = "end", id = "id")
+find_genes(d, genes, chr1 = "chr", pos = "pos", out = "genes",
+           chr2 = chr1, start = "start", end = "end", id = "id")
 }
 \arguments{
   \item{d}{

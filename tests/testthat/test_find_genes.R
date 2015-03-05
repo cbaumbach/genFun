@@ -19,7 +19,7 @@ g4 4 1 5
 ", "r"), header = TRUE, stringsAsFactors = FALSE)
 
     dout <- read.table(textConnection("\
-snp chr pos id
+snp chr pos genes
 rs1 1 1 g1,g2
 rs2 1 5 g2
 rs3 2 3 g3
@@ -48,7 +48,7 @@ g4 4 1 5
 ", "r"), header = TRUE, stringsAsFactors = FALSE)
 
     dout <- read.table(textConnection("\
-snp chr pos id
+snp chr pos genes
 rs1 NA 1 NA
 rs2 1 5 g2
 rs3 2 NA NA
@@ -77,7 +77,7 @@ g4 4 1 NA
 ", "r"), header = TRUE, stringsAsFactors = FALSE)
 
     dout <- read.table(textConnection("\
-snp chr pos id
+snp chr pos genes
 rs1 1 1 NA
 rs2 1 5 NA
 rs3 2 3 g3
