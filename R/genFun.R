@@ -43,3 +43,33 @@ find_genes <- function(d, genes, chr1 = "chr", pos = "pos", out = id,
     d[[out]][d[[out]] == ""] <- NA
     d
 }
+
+chr2int <- function(x, prefix = NULL)
+{
+    crop_to_range <- function(x)
+    {
+        x[x < 1L | 25 < x] <- NA
+        x
+    }
+    if (typeof(x) == "integer")
+        return(crop_to_range(x))
+    if (!is.null(prefix))
+        x <- sub(prefix, "", x)
+    x <- toupper(x)
+    x[x == "X"]  <- "23"
+    x[x == "Y"]  <- "24"
+    x[x == "MT"] <- "25"
+    x[!grepl("^[1-9][0-9]?$", x)] <- NA
+    crop_to_range(as.integer(x))
+}
+
+int2chr <- function(x)
+{
+    if (typeof(x) != "integer")
+        stop("argument must be of type 'integer'")
+    x[x < 1L | 25 < x] <- NA
+    x[x == 23L] <- "X"
+    x[x == 24L] <- "Y"
+    x[x == 25L] <- "MT"
+    as.character(x)
+}

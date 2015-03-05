@@ -23,7 +23,9 @@ Built: \tab R 3.1.1; ; 2015-02-13 20:24:05 UTC; unix\cr
 
 Index:
 \preformatted{
+chr2int          Convert chromosome string to integer
 find_genes       Map SNPs to genes
+int2chr          Convert chromosome from integer to string
 }
 }
 \author{
@@ -45,6 +47,10 @@ none
 \examples{
 library(genFun)
 
+## chr2int
+chr2int(c("1", "MT", "X", "Y"))
+chr2int(c("chr1", "chrMT", "chrX", "chrY"), prefix = "chr")
+
 ## find_genes
 d <- read.table(textConnection("\
 snp chr pos
@@ -63,4 +69,7 @@ g4 4 1 5
 ", "r"), header = TRUE, stringsAsFactors = FALSE)
 
 find_genes(d, genes)
+
+## int2chr
+int2chr(c(1:3, 23:25))
 }
