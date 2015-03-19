@@ -18,7 +18,7 @@ my %deal_with = (
     id        => sub { $block{id} = substr $_[0], 4, 10 },
     name      => sub { $block{name} = substr $_[0], 6 },
     namespace => sub { $block{namespace} = substr $_[0], 11 },
-    def       => sub { ($block{def} = $_[0]) =~ s/.*?"(.*)".*/$1/ },
+    def       => sub { ($block{def} = $_[0]) =~ s/.*?"(.*?)".*/$1/ },
     alt_id    => sub { push @{$block{alt_id}}, substr $_[0], 8 },
     is_a      => sub { push @{$block{is_a}}, substr $_[0], 6, 10 },
     relationship => sub {
