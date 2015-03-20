@@ -86,7 +86,6 @@ read.obo <- function(filename, colClasses = NULL)
         colClasses <- "character"
 
     con <- pipe(cmd, "r")
-    open(con)
     on.exit(close(con))
 
     read.delim(con, colClasses = colClasses)
