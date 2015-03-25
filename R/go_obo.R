@@ -67,3 +67,67 @@ print.dot_attributes <- function(x, ...)
     pr1(paste(y, collapse = ", "))
     pr1("]")
 }
+
+go_node <- function(id, data)
+{
+    name <- data$name[data$id == id]
+    n <- wrap_lines(name, 15, max_lines = 2L, sep = "\\n")
+
+    print(dot_attributes(
+        label = double_quote(n)))
+}
+
+go_edge <- function(from, to, data)
+{
+    x <- data[data$id == to, ]
+
+    d <- NULL
+    for (i in c("is_a", "part_of", "regulates",
+                "positively_regulates",
+                "negatively_regulates")) {
+        d[[i]] <- strsplit(x[, i], ",", fixed = TRUE)[[1L]]
+    }
+
+    ## IS_A
+   if (from %in% d[["is_a"]]) {
+
+        print(dot_attributes(
+            style = "solid",
+            color = "black",
+            dir   = "back"))
+    }
+    ## PART_OF
+    else if (from %in% d[["part_of"]]) {
+
+        print(dot_attributes(
+            style = "dashed",
+            color = "black",
+            dir   = "back"))
+    }
+    ## REGULATES
+    else if (from %in% d[["regulates"]]) {
+
+        print(dot_attributes(
+            style = "dotted",
+            color = "gray"))
+    }
+    ## NEGATIVELY_REGULATES
+    else if (from %in% d[["negatively_regulates"]]) {
+
+        print(dot_attributes(
+            style = "dotted",
+            color = "red"))
+    }
+    ## POSITIVELY_REGULATES
+    else if (from %in% d[["positively_regulates"]]) {
+
+        print(dot_attributes(
+            style = "dotted",
+            color = "green"))
+    }
+}
+
+print.gene_ontology <- function(x, ...)
+{
+    NextMethod("print", x, nodef = go_node, edgef = go_edge)
+}
