@@ -1,3 +1,10 @@
 import(miscFun, treeFun)
 
-exportPattern("^[[:alpha:]]+")
+export("find_genes",
+       "chr2int",
+       "int2chr",
+       "read.obo",
+       "read.gene_ontology",
+       "dot_attributes",
+       "print.dot_attributes",
+       "print.gene_ontology")
