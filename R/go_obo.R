@@ -109,21 +109,24 @@ go_edge <- function(from, to, data)
 
         print(dot_attributes(
             style = "dotted",
-            color = "gray"))
+            color = "gray",
+            dir   = "back"))
     }
     ## NEGATIVELY_REGULATES
     else if (from %in% d[["negatively_regulates"]]) {
 
         print(dot_attributes(
             style = "dotted",
-            color = "red"))
+            color = "red",
+            dir   = "back"))
     }
     ## POSITIVELY_REGULATES
     else if (from %in% d[["positively_regulates"]]) {
 
         print(dot_attributes(
             style = "dotted",
-            color = "green"))
+            color = "green",
+            dir   = "back"))
     }
 }
 
