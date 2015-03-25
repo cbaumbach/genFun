@@ -14,3 +14,22 @@ read.obo <- function(filename, colClasses = NULL)
 
     read.delim(con, colClasses = colClasses)
 }
+
+dot_attributes <- function(...)
+{
+    x <- list(...)
+    n <- names(x)
+    x <- as.character(x)
+    names(x) <- n
+    class(x) <- c("dot_attributes", class(x))
+    x
+}
+
+print.dot_attributes <- function(x, ...)
+{
+    pr1("[")
+    y <- sapply(names(x), function(tag)
+        sprintf("%s = %s", tag, double_quote(x[tag])))
+    pr1(paste(y, collapse = ", "))
+    pr1("]")
+}
