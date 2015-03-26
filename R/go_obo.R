@@ -73,8 +73,7 @@ go_node <- function(id, data)
     name <- data$name[data$id == id]
     n <- wrap_lines(name, 15, max_lines = 2L, sep = "\\n")
 
-    print(dot_attributes(
-        label = double_quote(n)))
+    print(dot_attributes(label = n))
 }
 
 go_edge <- function(from, to, data)
