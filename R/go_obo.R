@@ -68,7 +68,7 @@ print.dot_attributes <- function(x, ...)
     pr1("]")
 }
 
-go_node <- function(id, data)
+go_node <- function(id, data, attrib)
 {
     name <- data$name[data$id == id]
     n <- wrap_lines(name, 15, max_lines = 2L, sep = "\\n")
@@ -76,7 +76,7 @@ go_node <- function(id, data)
     print(dot_attributes(label = n))
 }
 
-go_edge <- function(from, to, data)
+go_edge <- function(from, to, data, attrib)
 {
     x <- data[data$id == to, ]
 
