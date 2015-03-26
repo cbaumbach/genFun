@@ -71,7 +71,7 @@ print.dot_attributes <- function(x, ...)
 go_node <- function(id, data, attrib)
 {
     name <- data$name[data$id == id]
-    n <- wrap_lines(name, 15, max_lines = 2L, sep = "\\n")
+    n <- wrap_lines(name, 15, max_lines = 3L, sep = "\\n")
 
     print(dot_attributes(label = n))
 }
