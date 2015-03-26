@@ -70,10 +70,20 @@ print.dot_attributes <- function(x, ...)
 
 go_node <- function(id, data, attrib)
 {
+    if (! "induced_by" %in% names(attrib))
+        stop("List of inducing nodes missing from tree attributes.")
+
     name <- data$name[data$id == id]
     n <- wrap_lines(name, 15, max_lines = 3L, sep = "\\n")
 
-    print(dot_attributes(label = n))
+    if (id %in% attrib[["induced_by"]])
+        print(dot_attributes(
+            label     = n,
+            fillcolor = "gold",
+            style     = "filled",
+            shape     = "box"))
+    else
+        print(dot_attributes(label = n))
 }
 
 go_edge <- function(from, to, data, attrib)
