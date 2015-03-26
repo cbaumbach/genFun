@@ -80,7 +80,7 @@ go_edge <- function(from, to, data)
 {
     x <- data[data$id == to, ]
 
-    d <- NULL
+    d <- list()
     for (i in c("is_a", "part_of", "regulates",
                 "positively_regulates",
                 "negatively_regulates")) {
