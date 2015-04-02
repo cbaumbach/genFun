@@ -141,5 +141,5 @@ go_edge <- function(from, to, data, attrib)
 
 print.gene_ontology <- function(x, ...)
 {
-    NextMethod("print", x, nodef = go_node, edgef = go_edge)
+    NextMethod("print", x, nodef = go_node, edgef = go_edge, ...)
 }

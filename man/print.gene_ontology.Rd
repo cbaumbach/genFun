@@ -15,7 +15,7 @@
     Tree object.
   }
   \item{...}{
-    Ignored.
+    Passed on to \code{\link[treeFun]{print.tree}}.
   }
 }
 \value{
