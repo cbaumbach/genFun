@@ -6,5 +6,6 @@ export("find_genes",
        "read.obo",
        "read.gene_ontology",
        "dot_attributes",
+       "snptest",
        "print.dot_attributes",
        "print.gene_ontology")

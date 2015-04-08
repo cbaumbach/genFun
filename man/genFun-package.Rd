@@ -26,6 +26,7 @@ Index:
 chr2int          Convert chromosome string to integer
 find_genes       Map SNPs to genes
 int2chr          Convert chromosome from integer to string
+snptest          Run snptest gwas on multiple cores
 }
 }
 \author{
@@ -72,4 +73,25 @@ find_genes(d, genes)
 
 ## int2chr
 int2chr(c(1:3, 23:25))
+
+## snptest
+\dontrun{
+snptest(
+    indir          = "path/to/directory/with/gz-compressed/input/files",
+    sample_file    = "path/to/phenotype/file",
+    exclusion_file = "path/to/file/with/exclusion/ids",
+    outdir         = "path/to/directory/for/snptest/output/files",
+    pheno          = "blood_sugar",
+    covs           = c("age", "sex", "bmi"),
+    add_args       = c("-missing_code NA",
+                       "-frequentist 1",
+                       "-method expected",
+                       "-hwe",
+                       "-printids",
+                       "-use_raw_covariates",
+                       "-use_raw_phenotypes"),
+    ncore          = 9L,
+    executable     = "/opt/snptest_v2.5_linux_x86_64_static/snptest_v2.5")
+}
+
 }
