@@ -6,15 +6,6 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
     ## Local helper functions.
     ## =================================================================
 
-    ## Recursively create directory unless it exists.
-    create_directory <- function(directory)
-    {
-        if (!file.exists(directory)) {
-            stopifnot(dir.create(directory, recursive = TRUE))
-            pr("Created directory: ", directory)
-        }
-    }
-
     ## Return TRUE if `logfile' ends in "finito".
     finito <- function(logfile)
     {
@@ -87,7 +78,7 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
     files <- files[order(files$chr, files$chunk), ]
 
     ## Create directories for the various kinds of output files.
-    lapply(c(outdir, logdir), create_directory)
+    mkdir(c(outdir, logdir))
 
     ## =================================================================
     ## Run snptest on as yet unfinished chunks.
