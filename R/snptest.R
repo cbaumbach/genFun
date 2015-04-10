@@ -12,20 +12,6 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
         sub("/$", "", x)
     }
 
-    ## Extract chromosome number from file name.  If chromosome cannot
-    ## be converted to an integer, return as string.
-    get_chr <- function(x)
-    {
-        y <- sub(".*chr([^_]+)_.*", "\\1", x, perl = TRUE)
-        tryCatch(as.integer(y), warning = function(w) y)
-    }
-
-    ## Extract chunk number from file name.
-    get_chunk <- function(x)
-    {
-        as.integer(sub(".*chr[^_]+_(\\d+).*", "\\1", x, perl = TRUE))
-    }
-
     ## Recursively create directory unless it exists.
     create_directory <- function(directory)
     {
@@ -94,8 +80,8 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
     logdir <- file.path(outdir, "log")
     infiles <- list.files(indir, pattern = "\\.gz$", full.names = TRUE)
     files <- data.frame(
-        chr   = get_chr(infiles),
-        chunk = get_chunk(infiles),
+        chr   = chr(infiles),
+        chunk = chunk(infiles),
         input = infiles,
         stringsAsFactors = FALSE)
     files$stub   <- paste0("chr", files$chr, "_", files$chunk)
