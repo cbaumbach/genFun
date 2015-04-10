@@ -23,7 +23,9 @@ Built: \tab R 3.1.1; ; 2015-02-13 20:24:05 UTC; unix\cr
 
 Index:
 \preformatted{
+chr              Extract chromosome number from file names
 chr2int          Convert chromosome string to integer
+chunk            Extract chunk number from file names
 find_genes       Map SNPs to genes
 int2chr          Convert chromosome from integer to string
 snptest          Run snptest gwas on multiple cores
@@ -48,9 +50,15 @@ none
 \examples{
 library(genFun)
 
+## chr
+chr(c("chr5_path/to/the_chr1_3.txt", "chr5_path/to/the_chr2_4.txt"))
+
 ## chr2int
 chr2int(c("1", "MT", "X", "Y"))
 chr2int(c("chr1", "chrMT", "chrX", "chrY"), prefix = "chr")
+
+## chunk
+chunk(c("chr5_path/to/the_chr1_3.txt", "chr5_path/to/the_chr2_4.txt"))
 
 ## find_genes
 d <- read.table(textConnection("\

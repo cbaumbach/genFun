@@ -1,11 +1,13 @@
 import(miscFun, treeFun)
 
-export("find_genes",
+export("chr",
        "chr2int",
-       "int2chr",
-       "read.obo",
-       "read.gene_ontology",
+       "chunk",
        "dot_attributes",
-       "snptest",
+       "find_genes",
+       "int2chr",
        "print.dot_attributes",
-       "print.gene_ontology")
+       "print.gene_ontology",
+       "read.gene_ontology",
+       "read.obo",
+       "snptest")

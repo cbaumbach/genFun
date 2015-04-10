@@ -73,3 +73,14 @@ int2chr <- function(x)
     x[x == 25L] <- "MT"
     as.character(x)
 }
+
+chr <- function(xs, pattern = ".*chr([^_]+)")
+{
+    y <- submatch(pattern, xs, drop = TRUE)
+    tryCatch(as.integer(y), warning = function(w) y)
+}
+
+chunk <- function(xs, pattern = ".*chr[^_]+_(\\d+)")
+{
+    as.integer(submatch(pattern, xs, drop = TRUE))
+}
