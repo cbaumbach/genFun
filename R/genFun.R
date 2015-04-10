@@ -84,3 +84,8 @@ chunk <- function(xs, pattern = ".*chr[^_]+_(\\d+)")
 {
     as.integer(submatch(pattern, xs, drop = TRUE))
 }
+
+unslash <- function(dirs)
+{
+    sub("/+$", "", dirs)
+}

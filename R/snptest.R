@@ -6,12 +6,6 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
     ## Local helper functions.
     ## =================================================================
 
-    ## Remove trailing slash.
-    strip_trailing_slash <- function(x)
-    {
-        sub("/$", "", x)
-    }
-
     ## Recursively create directory unless it exists.
     create_directory <- function(directory)
     {
@@ -60,8 +54,8 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
     force(covs)
 
     ## Remove trailing slash in directory names.
-    indir  <- strip_trailing_slash(indir)
-    outdir <- strip_trailing_slash(outdir)
+    indir  <- unslash(indir)
+    outdir <- unslash(outdir)
 
     ## Check that all input files and directories exist.
     stopifnot(all(vapply(c(indir, sample_file, exclusion_file),

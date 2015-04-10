@@ -29,6 +29,7 @@ chunk            Extract chunk number from file names
 find_genes       Map SNPs to genes
 int2chr          Convert chromosome from integer to string
 snptest          Run snptest gwas on multiple cores
+unslash          Remove trailing slash from directory names
 }
 }
 \author{
@@ -102,4 +103,6 @@ snptest(
     executable     = "/opt/snptest_v2.5_linux_x86_64_static/snptest_v2.5")
 }
 
+## unslash
+unslash(c("path/to/dir_with_slash/", "path/to/dir_without_slash"))
 }

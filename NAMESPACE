@@ -10,4 +10,5 @@ export("chr",
        "print.gene_ontology",
        "read.gene_ontology",
        "read.obo",
-       "snptest")
+       "snptest",
+       "unslash")
