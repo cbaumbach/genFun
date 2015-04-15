@@ -104,13 +104,13 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
         analysis_name <- shQuote(paste(pheno, "~ 1 +", covsum))
 
         cmd <- paste(executable,
+                     "-analysis_name", analysis_name,
                      "-data", d$input, sample_file,
                      "-log", d$log,
                      "-o", d$output,
                      "-pheno", pheno,
                      "-exclude_samples", exclusion_file,
                      "-cov_names", paste(covs, collapse = " "),
-                     "-analysis_name", analysis_name,
                      if (!missing(add_args))
                          paste(add_args, collapse = " "))
 
