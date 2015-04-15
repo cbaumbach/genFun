@@ -9,7 +9,8 @@
 }
 \usage{
 snptest(indir, sample_file, exclusion_file, outdir, pheno, covs,
-        add_args = NULL, ncore = 1L, executable = "snptest")
+        add_args = NULL, ncore = 1L, pattern = "\\\\.gz$",
+        chunk_pattern = NULL, executable = "snptest")
 }
 \arguments{
   \item{indir}{
@@ -36,6 +37,14 @@ snptest(indir, sample_file, exclusion_file, outdir, pheno, covs,
   \item{ncore}{
     Number of cores to use in parallel.
   }
+  \item{pattern}{
+    Regex pattern used to match input chunk files in `indir'.
+  }
+  \item{chunk_pattern}{
+    Allows the user to specify a custom (extended) regular expression in
+    which the chunk part of the input file names is matched by a
+    parenthesized subexpression (e.g. "chr[^_]+_([[:alpha:]]+_\\\\d+)").
+  }
   \item{executable}{
     Path to snptest executable.
   }
@@ -58,7 +67,7 @@ library(genFun)
 \dontrun{
 snptest(
     indir          = "path/to/directory/with/gz-compressed/input/files",
-    sample_file    = "path/to/phenotype/file",
+    sample_file    = "path/to/MEN_ONLY_phenotype_file",
     exclusion_file = "path/to/file/with/exclusion/ids",
     outdir         = "path/to/directory/for/snptest/output/files",
     pheno          = "blood_sugar",
@@ -69,8 +78,11 @@ snptest(
                        "-hwe",
                        "-printids",
                        "-use_raw_covariates",
-                       "-use_raw_phenotypes"),
+                       "-use_raw_phenotypes",
+                       "-assume_chromosome X"),
     ncore          = 9L,
+    pattern        = "males.*\\\\.gz$",
+    chunk_pattern  = "chr[^_]+_([[:alpha:]]+_\\\\d+)",
     executable     = "/opt/snptest_v2.5_linux_x86_64_static/snptest_v2.5")
 }
 }

@@ -1,10 +1,15 @@
 snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
                     covs, add_args = NULL, ncore = 1L,
+                    pattern = "\\.gz$", chunk_pattern = NULL,
                     executable = "snptest")
 {
     ## =================================================================
     ## Local helper functions.
     ## =================================================================
+
+    ## Patch `chunk' function with user-supplied submatch pattern.
+    if (!is.null(chunk_pattern))
+        chunk <- function(xs) submatch(chunk_pattern, xs, drop = TRUE)
 
     ## Return TRUE if `logfile' ends in "finito".
     finito <- function(logfile)
@@ -63,7 +68,7 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
     ## Create table of all file names involved.
     ## =================================================================
     logdir <- file.path(outdir, "log")
-    infiles <- list.files(indir, pattern = "\\.gz$", full.names = TRUE)
+    infiles <- list.files(indir, pattern = pattern, full.names = TRUE)
     files <- data.frame(
         chr   = chr(infiles),
         chunk = chunk(infiles),
