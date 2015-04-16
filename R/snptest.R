@@ -1,15 +1,21 @@
 snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
                     covs, add_args = NULL, ncore = 1L,
-                    pattern = "\\.gz$", chunk_pattern = NULL,
+                    pattern = "\\.gz$",
+                    chr_chunk = ".*chr([^_]+)_(\\d+)",
                     executable = "snptest")
 {
     ## =================================================================
     ## Local helper functions.
     ## =================================================================
 
-    ## Patch `chunk' function with user-supplied submatch pattern.
-    if (!is.null(chunk_pattern))
-        chunk <- function(xs) submatch(chunk_pattern, xs, drop = TRUE)
+    ## Build functions for extracting chromosome and chunk number from
+    ## input chunk file names.
+    extract <- function(k)
+    {
+        function(xs) maybe(as.integer, submatch(chr_chunk, xs)[, k])
+    }
+    chr   <- extract(1L)
+    chunk <- extract(2L)
 
     ## Return TRUE if `logfile' ends in "finito".
     finito <- function(logfile)

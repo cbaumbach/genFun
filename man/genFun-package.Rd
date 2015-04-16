@@ -85,21 +85,36 @@ int2chr(c(1:3, 23:25))
 
 ## snptest
 \dontrun{
+## Run snptest on men-only nonPAR chunks on chromosome X.
+##
+## Note: - The sample file must contain the same individuals as the
+##         imputed chunk files.
+##       - You have to specify "-assume_chromosome X".
+##       - You have to craft your regular expression for `chr_chunk'
+##         because the nonPAR chunk files don't follow the default
+##         naming convention where chromosome and chunk are specified as
+##         in "chr3_7".
+##       - You have to specify a custom `pattern' because you need to
+##         restrict the set of chunk files to those that contain only
+##         male subjects.
 snptest(
     indir          = "path/to/directory/with/gz-compressed/input/files",
-    sample_file    = "path/to/phenotype/file",
+    sample_file    = "path/to/MEN_ONLY_phenotype_file",
     exclusion_file = "path/to/file/with/exclusion/ids",
     outdir         = "path/to/directory/for/snptest/output/files",
     pheno          = "blood_sugar",
-    covs           = c("age", "sex", "bmi"),
+    covs           = c("age", "bmi"),
     add_args       = c("-missing_code NA",
                        "-frequentist 1",
                        "-method expected",
                        "-hwe",
                        "-printids",
                        "-use_raw_covariates",
-                       "-use_raw_phenotypes"),
+                       "-use_raw_phenotypes",
+                       "-assume_chromosome XY"),
     ncore          = 9L,
+    pattern        = "males.*\\\\.gz$",
+    chr_chunk      = ".*chr([^_]+)_(nonPAR_\\\\d+)",
     executable     = "/opt/snptest_v2.5_linux_x86_64_static/snptest_v2.5")
 }
 

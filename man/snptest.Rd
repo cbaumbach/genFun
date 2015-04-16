@@ -10,7 +10,7 @@
 \usage{
 snptest(indir, sample_file, exclusion_file, outdir, pheno, covs,
         add_args = NULL, ncore = 1L, pattern = "\\\\.gz$",
-        chunk_pattern = NULL, executable = "snptest")
+        chr_chunk = ".*chr([^_]+)_(\\\\d+)", executable = "snptest")
 }
 \arguments{
   \item{indir}{
@@ -40,10 +40,9 @@ snptest(indir, sample_file, exclusion_file, outdir, pheno, covs,
   \item{pattern}{
     Regex pattern used to match input chunk files in `indir'.
   }
-  \item{chunk_pattern}{
-    Allows the user to specify a custom (extended) regular expression in
-    which the chunk part of the input file names is matched by a
-    parenthesized subexpression (e.g. "chr[^_]+_([[:alpha:]]+_\\\\d+)").
+  \item{chr_chunk}{
+    Extended regular expression with two parenthesized subexpressions
+    matching chromosome and chunk number in input chunk file names.
   }
   \item{executable}{
     Path to snptest executable.
@@ -62,12 +61,12 @@ snptest(indir, sample_file, exclusion_file, outdir, pheno, covs,
   and b) that all matched chunk files can be snptest'ed using the same
   set of snptest options.
 
-  If your chunk files follow a naming scheme where the chunk number
-  cannot be matched by the parenthesized subexpression of the following
-  regular expression "chr[^_]+_(\\\\d+)", then you will have to specify
-  your own regular expression (see \link[base]{regex}).  This (extended)
-  regular expression must contain a parenthesized subexpression which
-  matches the chunk part of your chunk file names.
+  If your chunk files follow a naming scheme where chromosome and chunk
+  number cannot be matched by the default regular expression for
+  `chr_chunk', then you will have to specify your own regular expression
+  (see \link[base]{regex}).  This (extended) regular expression must
+  contain two parenthesized subexpressions.  The first must match the
+  chromosome, the second the chunk part of your chunk file names.
 }
 \value{
   Returns a data frame with columns: `chr' (chromosome number), `chunk'
@@ -90,9 +89,10 @@ library(genFun)
 ## Note: - The sample file must contain the same individuals as the
 ##         imputed chunk files.
 ##       - You have to specify "-assume_chromosome X".
-##       - You have to use a custom `chunk_pattern' because the nonPAR
-##         chunk files don't follow the default naming convention where
-##         chromosome and chunk are specified as in "chr3_7".
+##       - You have to craft your regular expression for `chr_chunk'
+##         because the nonPAR chunk files don't follow the default
+##         naming convention where chromosome and chunk are specified as
+##         in "chr3_7".
 ##       - You have to specify a custom `pattern' because you need to
 ##         restrict the set of chunk files to those that contain only
 ##         male subjects.
@@ -113,7 +113,7 @@ snptest(
                        "-assume_chromosome XY"),
     ncore          = 9L,
     pattern        = "males.*\\\\.gz$",
-    chunk_pattern  = "chr[^_]+_(nonPAR_\\\\d+)",
+    chr_chunk      = ".*chr([^_]+)_(nonPAR_\\\\d+)",
     executable     = "/opt/snptest_v2.5_linux_x86_64_static/snptest_v2.5")
 }
 }
