@@ -47,7 +47,16 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
     force(exclusion_file)
     force(outdir)
     force(pheno)
-    force(covs)
+
+    ## Force user to explicitly specify all covariates via `covs'.
+    if (missing(covs) ||                           # not specified
+        length(covs) == 0L ||                      # 0-length
+        all(grepl("^\\s*$", covs, perl = TRUE)) || # all empty
+        ## attempt to override `covs'
+        (!is.null(add_args) && any(grepl("-cov_all", add_args))))
+        stop("You must specify the names of all covariates as used in ",
+             "the `sample_file' using the `covs' argument to ",
+             "`snptest'.  Something like \"-cov_all\" won't work :)")
 
     ## Remove trailing slash in directory names.
     indir  <- unslash(indir)
