@@ -76,13 +76,20 @@ int2chr <- function(x)
 
 chr <- function(xs, pattern = ".*chr([^_]+)")
 {
-    y <- submatch(pattern, xs, drop = TRUE)
-    tryCatch(as.integer(y), warning = function(w) y)
+    if (nsubexp(pattern) != 1L)
+        stop("`pattern' must contain exactly one parenthesized ",
+             "subexpression: ", single_quote(pattern))
+
+    maybe(as.integer, submatch(pattern, xs, drop = TRUE))
 }
 
 chunk <- function(xs, pattern = ".*chr[^_]+_(\\d+)")
 {
-    as.integer(submatch(pattern, xs, drop = TRUE))
+    if (nsubexp(pattern) != 1L)
+        stop("`pattern' must contain exactly one parenthesized ",
+             "subexpression: ", single_quote(pattern))
+
+    maybe(as.integer, submatch(pattern, xs, drop = TRUE))
 }
 
 unslash <- function(dirs)
