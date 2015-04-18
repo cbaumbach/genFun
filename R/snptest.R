@@ -151,3 +151,67 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
 
     files
 }
+
+summarize_snptest <- function(filename, chr)
+{
+    ## =================================================================
+    ## Local functions.
+    ## =================================================================
+
+    ## Remove 1st and last character.
+    trim1 <- function(x)
+    {
+        stopifnot(length(x) == 1L && nchar(x) > 2L)
+        sub("^.(.*).$", "\\1", x, perl = TRUE)
+    }
+
+    ## Create column names.
+    variable <- function(summary_measure)
+    {
+        paste0(test_type, "_", genetic_model, "_", summary_measure)
+    }
+
+    ## =================================================================
+    ## Read snptest table.
+    ## =================================================================
+    d <- read.table(filename, header = TRUE, check.names = FALSE)
+
+    ## =================================================================
+    ## Determine type of snptest analysis performed.
+    ## =================================================================
+    columns <- paste(names(d), collapse = " ")
+
+    test_type <- trim1(match1of(
+        paste0(" ", c("frequentist", "bayesian"), "_"),
+        columns))
+
+    genetic_model <- trim1(match1of(
+        paste0("_", c("add", "dom", "rec", "gen", "het"), "_"),
+        columns))
+
+    ## =================================================================
+    ## Add additional columns.
+    ## =================================================================
+    d$chromosome <- chr
+
+    ## Allele frequency of coding allele, i.e., `alleleB' in snptest.
+    d$freq_alleleB <- with(d, (all_AB + (2 * all_BB))
+                           / (2 * (all_AA + all_AB + all_BB)))
+
+    d$callrate <- with(d, 1 - all_NULL
+                       / (all_AA + all_AB + all_BB + all_NULL))
+
+    d$imputed <- as.integer(d$alternate_ids == "---")
+
+    ## =================================================================
+    ## Return a selection of colums.
+    ## =================================================================
+    hwe <- "cohort_1_hwe"
+    cols <- c("rsid", "chromosome", "position", "alleleA", "alleleB",
+              "average_maximum_posterior_call", "info", "all_total",
+              "missing_data_proportion", if (hwe %in% names(d)) hwe,
+              variable(c("beta_1", "se_1", "pvalue")),
+              "freq_alleleB", "imputed", "callrate")
+
+    d[, cols, drop = FALSE]
+}
