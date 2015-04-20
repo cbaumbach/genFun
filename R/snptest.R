@@ -177,7 +177,17 @@ summarize_snptest <- function(filename, chr)
     ## =================================================================
     ## Read snptest table.
     ## =================================================================
-    d <- read.table(filename, header = TRUE, check.names = FALSE)
+
+    ## Read columns as "character" except those few that we need to
+    ## compute summary statistics below.
+    header <- scan(filename, what = character(), nlines = 1L,
+                   quiet = TRUE)
+    colCl <- rep_len("character", length(header))
+    names(colCl) <- header
+    colCl[c("all_AA", "all_AB", "all_BB", "all_NULL")] <- "integer"
+
+    d <- read.table(filename, header = TRUE, check.names = FALSE,
+                    colClasses = colCl)
 
     ## =================================================================
     ## Determine type of snptest analysis performed.
