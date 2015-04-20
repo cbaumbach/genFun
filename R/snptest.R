@@ -168,6 +168,9 @@ summarize_snptest <- function(filename, chr)
     ## Create column names.
     variable <- function(summary_measure)
     {
+        ## `test_type' and `genetic_model' are defined and looked up
+        ## in the environment in which `variable' was defined (see
+        ## below).
         paste0(test_type, "_", genetic_model, "_", summary_measure)
     }
 
@@ -179,15 +182,23 @@ summarize_snptest <- function(filename, chr)
     ## =================================================================
     ## Determine type of snptest analysis performed.
     ## =================================================================
-    columns <- paste(names(d), collapse = " ")
+    test_types <- c("frequentist", "bayesian")
+    genetic_models <- c("add", "dom", "rec", "gen", "het")
 
-    test_type <- trim1(match1of(
-        paste0(" ", c("frequentist", "bayesian"), "_"),
-        columns))
+    test_type <- test_types[find_first_match(
+        paste0("^", test_types), names(d))]
 
-    genetic_model <- trim1(match1of(
-        paste0("_", c("add", "dom", "rec", "gen", "het"), "_"),
-        columns))
+    if (is.na(test_type))
+        stop("Unable to determine \"test type\" from: ",
+             paste(names(d), collapse = ", "))
+
+    genetic_model <- genetic_models[find_first_match(
+        paste0("^", test_type, "_", genetic_models),
+        names(d))]
+
+    if (is.na(genetic_model))
+        stop("Unable to determine \"genetic model\" from: ",
+             paste(names(d), collapse = ", "))
 
     ## =================================================================
     ## Add additional columns.
