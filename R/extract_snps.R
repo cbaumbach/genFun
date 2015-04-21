@@ -1,4 +1,4 @@
-extract_snps <- function(indir, outfile, snps, chunkmap, keep = NULL,
+extract_snps <- function(snps, indir, chunkmap, keep = NULL,
                          idfile = NULL, pattern = "\\.gz$", ncore = 1L,
                          chr_chunk = ".*chr([^_]+)_(\\d+)")
 {
@@ -8,7 +8,6 @@ extract_snps <- function(indir, outfile, snps, chunkmap, keep = NULL,
 
     ## Check for existence of mandatory arguments.
     force(indir)
-    force(outfile)
     force(snps)
     force(chunkmap)
 
