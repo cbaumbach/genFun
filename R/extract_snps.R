@@ -178,7 +178,8 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     ## Group snps by chunk file.
     by_chunk <- split(d$snp, d$file)
 
-    pr("Number of chunk files to search through: ", length(by_chunk))
+    pr("Using ", ncore, " core", if (ncore > 1) "s", " to search thru ",
+       length(by_chunk), " chunk", if (length(by_chunk) > 1) "s", " ...")
 
     extract_from_chunk <- function(k)
     {
