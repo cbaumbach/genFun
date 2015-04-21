@@ -8,8 +8,8 @@
   Extract snps from imputed chunk files
 }
 \usage{
-extract_snps(snps, indir, chunkmap, keep = NULL, idfile = NULL,
-             pattern = "\\\\.gz$", ncore = 1L,
+extract_snps(snps, indir, chunkmap, chunkmap_cols = 1:3, keep = NULL,
+             idfile = NULL, pattern = "\\\\.gz$", ncore = 1L,
              chr_chunk = ".*chr([^_]+)_(\\\\d+)")
 }
 \arguments{
@@ -21,6 +21,11 @@ extract_snps(snps, indir, chunkmap, keep = NULL, idfile = NULL,
   }
   \item{chunkmap}{
     Paths to files mapping snps to chromosomes and chunks.
+  }
+  \item{chunkmap_cols}{
+    Length-3 integer vector naming the positions of the columns in the
+    `chunkmap' files corresponding to snp identifier, chromosome, and
+    chunk number.
   }
   \item{keep}{
     Character vector with identifiers of individuals for which to
@@ -42,9 +47,16 @@ extract_snps(snps, indir, chunkmap, keep = NULL, idfile = NULL,
   }
 }
 \details{
-  The first three columns of the `chunkmap' files must correspond to the
-  snp identifier, the chromosome, and the chunk number (in that order).
-  Additional columns will be ignored.
+  By default, the first 3 columns of the `chunkmap' files are assumed to
+  correspond to the snp identifier, the chromosome, and the chunk number
+  (in that order).  If your `chunkmap' files use different columns, you
+  must specify the corresponding columns in `chunkmap_cols'.  Columns
+  other than the ones named in `chunkmap_cols' are ignored.
+
+  In order to determine whether your `chunkmap' files have a header or
+  not, we check whether the first line of each `chunkmap' file contains
+  a number in which case we assume that it has no header.  Therefore,
+  the headers of your `chunkmap' files must not contain any numbers.
 
   The `idfile' must not have a header and must contain one identifier
   per line.
@@ -62,6 +74,7 @@ extract_snps(
     snps      = c("rs123", "rs456"),
     indir     = "path/to/directory/with_chunk_files/",
     chunkmap  = c("path/to/chunkmap_part_1.txt", "path/to/chunkmap_part_2.txt"),
+    chunkmap_cols = c(1L, 3L, 4L),
     keep      = c("person_1", "person_2"),
     idfile    = "path/to/file/with_all_person_ids_in_correct_order.txt",
     pattern   = "\\.gz$",

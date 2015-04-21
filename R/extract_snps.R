@@ -1,6 +1,6 @@
-extract_snps <- function(snps, indir, chunkmap, keep = NULL,
-                         idfile = NULL, pattern = "\\.gz$", ncore = 1L,
-                         chr_chunk = ".*chr([^_]+)_(\\d+)")
+extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
+                         keep = NULL, idfile = NULL, pattern = "\\.gz$",
+                         ncore = 1L, chr_chunk = ".*chr([^_]+)_(\\d+)")
 {
     ## =================================================================
     ## Validate arguments.
@@ -82,15 +82,26 @@ extract_snps <- function(snps, indir, chunkmap, keep = NULL,
     ## =================================================================
     read_3_columns <- function(f)
     {
+        ## Only read snp, chr, and chunk columns.
         line_1 <- scan(f, character(), n = 1L, quiet = TRUE)
-        colCl <- c(rep_len("character", 3L),
-                   rep_len("NULL", length(line_1) - 3L))
+        colCl <- rep_len("NULL", length(line_1))
+        colCl[chunkmap_cols] <- "character"
 
+        ## Assign column names based on the dimensions of the original
+        ## table instead of the reduced 3-column table since in the
+        ## original table we know the positions of the snp, chr, and
+        ## chunk columns.
+        cols <- c("snp", "chr", "chunk")
+        col.names <- rep_len(NA, length(line_1))
+        col.names[chunkmap_cols] <- cols
+
+        ## Determine whether the file has a header row.
         header <- !any(grepl("[0-9]", line_1[1:3]))
+
         d <- read.table(f, header = header, colClasses = colCl,
-                        stringsAsFactors = FALSE)
-        names(d) <- c("snp", "chr", "chunk")
-        d[d$snp %in% snps, , drop = FALSE]
+                        stringsAsFactors = FALSE, col.names = col.names)
+
+        d[d$snp %in% snps, cols, drop = FALSE]
     }
 
     pr("Reading snp -> chunk maps ...")
