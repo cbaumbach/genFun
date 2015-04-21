@@ -59,10 +59,9 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     ## table-like string.
     format_snps <- function(snp, chr, chunk)
     {
-        fmt <- "%10s %3s %5s"
-        x <- paste(sprintf(fmt, "snp", "chr", "chunk"),
-                   sprintf(fmt, snp, chr, chunk),
-                   collapse = "\n")
+        fmt <- "%11s %3s %5s"
+        x <- paste(c(sprintf(fmt, "snp", "chr", "chunk"),
+                     sprintf(fmt, snp, chr, chunk)), collapse = "\n")
         x
     }
 
