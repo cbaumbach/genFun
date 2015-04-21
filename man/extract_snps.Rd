@@ -53,10 +53,9 @@ extract_snps(snps, indir, chunkmap, chunkmap_cols = 1:3, keep = NULL,
   must specify the corresponding columns in `chunkmap_cols'.  Columns
   other than the ones named in `chunkmap_cols' are ignored.
 
-  In order to determine whether your `chunkmap' files have a header or
-  not, we check whether the first line of each `chunkmap' file contains
-  a number in which case we assume that it has no header.  Therefore,
-  the headers of your `chunkmap' files must not contain any numbers.
+  We assume the a `chunkmap' file has a header if all fields in the
+  first row are of type "character".  Therefore, headers of your
+  `chunkmap' files must not contain any numbers in the column names.
 
   The `idfile' must not have a header and must contain one identifier
   per line.

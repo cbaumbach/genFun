@@ -87,19 +87,11 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         colCl <- rep_len("NULL", length(line_1))
         colCl[chunkmap_cols] <- "character"
 
-        ## Assign column names based on the dimensions of the original
-        ## table instead of the reduced 3-column table since in the
-        ## original table we know the positions of the snp, chr, and
-        ## chunk columns.
+        d <- data.table::fread(f, data.table = FALSE,
+                               colClasses = colCl)
+
         cols <- c("snp", "chr", "chunk")
-        col.names <- rep_len(NA, length(line_1))
-        col.names[chunkmap_cols] <- cols
-
-        ## Determine whether the file has a header row.
-        header <- !any(grepl("[0-9]", line_1[1:3]))
-
-        d <- read.table(f, header = header, colClasses = colCl,
-                        stringsAsFactors = FALSE, col.names = col.names)
+        names(d) <- cols[order(chunkmap_cols)]
 
         d[d$snp %in% snps, cols, drop = FALSE]
     }
