@@ -27,6 +27,7 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         stop("You must specify at least 1 snp in `snps'.")
 
     ## Check that `keep' and `idfile' are consistent.
+    extract_individuals <- FALSE
     if (length(keep)) {
         if (is.null(idfile))
             stop("`idfile' missing.")
@@ -40,15 +41,13 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         if (any(not_there))
             stop("Some ids from `keep' are not among the ids in ",
                  "`idfile': ", paste(keep[not_there], collapse = ", "))
+
+        extract_individuals <- TRUE
     }
 
     ## =================================================================
     ## Local helper functions.
     ## =================================================================
-
-    ## Number of columns before imputed probability triples in impute
-    ## output files.
-    leading_columns <- 5L
 
     ## Build functions for extracting chromosome and chunk number from
     ## input chunk file names.
@@ -63,6 +62,21 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         x <- paste(c(sprintf(fmt, "snp", "chr", "chunk"),
                      sprintf(fmt, snp, chr, chunk)), collapse = "\n")
         x
+    }
+
+    ## Returns the columns in the chunk files corresponding to the
+    ## individual ids that can be found in rows `xs' of `idfile'.
+    pos2col <- function(xs)
+    {
+        step <- 3L         # probabilities come in triples
+        offset <- 5L       # number of leading non-probability columns
+
+        g <- function(x)
+        {
+            seq(step * (x-1L) + 1L, step * x)
+        }
+
+        offset + unlist(lapply(xs, g), use.names = FALSE)
     }
 
     ## =================================================================
@@ -120,6 +134,19 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     rm(not_there)
 
     d <- d[order(d$chr, d$chunk), , drop = FALSE]
+
+    ## =================================================================
+    ## Determine columns to be extracted from chunk files.
+    ## =================================================================
+
+    ## Number of columns before imputed probability triples in impute
+    ## chunk files.
+    leading_columns <- 5L
+
+    if (extract_individuals) {
+        selected_columns <- c(seq_len(leading_columns),
+                              pos2col(match(keep, ids)))
+    }
 
     ## =================================================================
     ## Extract snps from chunk files.
