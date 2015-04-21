@@ -181,22 +181,67 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     pr("Using ", ncore, " core", if (ncore > 1) "s", " to search thru ",
        length(by_chunk), " chunk", if (length(by_chunk) > 1) "s", " ...")
 
+    ## =================================================================
+    ## Extraction using pure R.
+    ## =================================================================
+
+    ## extract_from_chunk <- function(k)
+    ## {
+    ##     snps       <- by_chunk[[k]]
+    ##     chunk_file <- names(by_chunk)[k]
+    ##     con        <- gzfile(chunk_file, "r")
+    ##     on.exit(close(con))
+    ##     d <- read.table(con, colClasses = "character",
+    ##                     stringsAsFactors = FALSE)
+    ##     pr1(".")
+    ##     d[d[[2]] %in% snps, , drop = FALSE]
+    ## }
+
+    ## =================================================================
+    ## Extraction using Perl.
+    ## =================================================================
+
+    perl_script <- file.path(find.package("genFun"),
+                             "perl", "extract_from_chunk.pl")
+
+    ## Create temporary file names before running in parallel.
+    snp_files <- tempfile(rep_len("extract_snps_", length(by_chunk)),
+                          tmpdir = "/tmp")
+
+    cmd <- paste(perl_script, "-s", snp_files, "-c", names(by_chunk))
+
     extract_from_chunk <- function(k)
     {
-        snps <- by_chunk[[k]]
-        chunk_file <- names(by_chunk)[k]
-        con <- gzfile(chunk_file, "r")
-        on.exit(close(con))
-        d <- read.table(con, colClasses = "character",
-                        stringsAsFactors = FALSE)
+        cat(by_chunk[[k]], file = snp_files[k], sep = "\n")
+        con <- pipe(cmd[k], "r")
+
+        tryCatch({
+            d <- read.table(con, colClasses = "character",
+                            stringsAsFactors = FALSE)
+        }, finally = {
+            file.remove(snp_files[k])
+            close(con)
+        })
+
         pr1(".")
-        d[d[[2]] %in% snps, , drop = FALSE]
+
+        if (extract_individuals)
+            d[d[[2]] %in% snps, selected_columns, drop = FALSE]
+        else
+            d[d[[2]] %in% snps, , drop = FALSE]
     }
+
+    ## ds <- vector("list", length(by_chunk))
+    ## for (i in seq_along(by_chunk)) {
+    ##     ds[[i]] <- extract_from_chunk(i)
+    ## }
 
     ds <- parallel::mclapply(
         seq_along(by_chunk), extract_from_chunk, mc.preschedule = FALSE,
         mc.cores = ncore, mc.silent = FALSE)
     pr()
+
+    out <- do.call(rbind, ds)
 
     ## Issue a warning unless all snps were found.
     missing_snps <- unlist(Map(setdiff, by_chunk, lapply(ds, `[[`, 2L)),
@@ -210,5 +255,5 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
                             snp2chunk$chunk[not_there]))
     }
 
-    do.call(rbind, ds)
+    out
 }
