@@ -178,9 +178,6 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     ## Group snps by chunk file.
     by_chunk <- split(d$snp, d$file)
 
-    pr("Using ", ncore, " core", if (ncore > 1) "s", " to search thru ",
-       length(by_chunk), " chunk", if (length(by_chunk) > 1) "s", " ...")
-
     ## =================================================================
     ## Extraction using pure R.
     ## =================================================================
@@ -236,10 +233,16 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     ##     ds[[i]] <- extract_from_chunk(i)
     ## }
 
+    pr("Using ", ncore, " core", if (ncore > 1) "s", " to search ",
+       length(snps), " snp", if (length(snps) > 1) "s", " in ",
+       length(by_chunk), " chunk", if (length(by_chunk) > 1) "s")
+
+    pr1("Chunks: ")
+
     ds <- parallel::mclapply(
         seq_along(by_chunk), extract_from_chunk, mc.preschedule = FALSE,
         mc.cores = ncore, mc.silent = FALSE)
-    pr()
+    pr(" [done]")
 
     out <- do.call(rbind, ds)
 
