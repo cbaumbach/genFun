@@ -16,7 +16,7 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         stop("`indir' must be an existing directory with chunk files.")
 
     ## Check that all chunk map files exist.
-    not_there <- vapply(chunkmap, file.exists, logical(1L))
+    not_there <- ! file.exists(chunkmap)
     if (any(not_there))
         stop("The following files in `chunkmap' don't exist:\n",
              paste("\t", chunkmap[not_there], collapse = "\n"))
