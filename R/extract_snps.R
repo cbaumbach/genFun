@@ -171,7 +171,8 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     pr()
 
     ## Issue a warning unless all snps were found.
-    missing_snps <- Map(setdiff, by_chunk, lapply(ds, `[[`, 2L))
+    missing_snps <- unlist(Map(setdiff, by_chunk, lapply(ds, `[[`, 2L)),
+                           use.names = FALSE)
     if (length(missing_snps)) {
         not_there <- snp2chunk$snp %in% missing_snps
         warning("Some snps could not be found in the corresponding ",
