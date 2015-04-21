@@ -253,6 +253,7 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
                 format_snps(snp2chunk$snp[not_there],
                             snp2chunk$chr[not_there],
                             snp2chunk$chunk[not_there]))
+        attr(out, "missing_snps") <- missing_snps
     }
 
     out
