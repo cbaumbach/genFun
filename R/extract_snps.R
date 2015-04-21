@@ -82,12 +82,9 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     read_3_columns <- function(f)
     {
         ## Only read snp, chr, and chunk columns.
-        line_1 <- scan(f, character(), n = 1L, quiet = TRUE)
-        colCl <- rep_len("NULL", length(line_1))
-        colCl[chunkmap_cols] <- "character"
-
         d <- data.table::fread(f, data.table = FALSE,
-                               colClasses = colCl)
+                               select = chunkmap_cols,
+                               colClasses = "character")
 
         cols <- c("snp", "chr", "chunk")
         names(d) <- cols[order(chunkmap_cols)]
