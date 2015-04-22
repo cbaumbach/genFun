@@ -217,11 +217,6 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
             d[d[[2]] %in% snps, , drop = FALSE]
     }
 
-    ## ds <- vector("list", length(by_chunk))
-    ## for (i in seq_along(by_chunk)) {
-    ##     ds[[i]] <- extract_from_chunk(i)
-    ## }
-
     pr("Using ", ncore, " core", if (ncore > 1) "s", " to search ",
        length(snps), " snp", if (length(snps) > 1) "s", " in ",
        length(by_chunk), " chunk", if (length(by_chunk) > 1) "s")
