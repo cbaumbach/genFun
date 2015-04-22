@@ -128,12 +128,15 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     d <- merge(snp2chunk, files, by = c("chr", "chunk"))
 
     not_there <- ! snp2chunk$snp %in% d$snp
-    if (any(not_there))
-        stop("Some `snps' have chr-chunk values in `chunkmap' files ",
-             "that don't match any chunk file in `indir':\n",
-             format_snps(snp2chunk$snp[not_there],
-                         snp2chunk$chr[not_there],
-                         snp2chunk$chunk[not_there]))
+    snps_in_nonexistent_chunks <- character(0L)
+    if (any(not_there)) {
+        snps_in_nonexistent_chunks <- snp2chunk$snp[not_there]
+        warning("Some `snps' have chr-chunk values in `chunkmap' files ",
+                "that don't match any chunk file in `indir':\n",
+                format_snps(snp2chunk$snp[not_there],
+                            snp2chunk$chr[not_there],
+                            snp2chunk$chunk[not_there]))
+    }
     rm(not_there)
 
     d <- d[order(d$chr, d$chunk), , drop = FALSE]
