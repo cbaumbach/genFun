@@ -106,7 +106,7 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         d[d$snp %in% snps, cols, drop = FALSE]
     }
 
-    pr("Reading `chunkmap' files ...")
+    pr("Reading `chunkmap' file", if (length(chunkmap) > 1L) "s", " ...")
     snp2chunk <- do.call(
         rbind, parallel::mclapply(chunkmap, read_3_columns,
                                   mc.cores = ncore))
