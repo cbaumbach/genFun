@@ -205,7 +205,7 @@ summarize_snptest <- function(filename, chr)
     ## =================================================================
     ## Add additional columns.
     ## =================================================================
-    d$chromosome <- chr
+    d$chromosome <- chr                 # use correct chromosome
 
     ## Allele frequency of coding allele, i.e., `alleleB' in snptest.
     d$freq_alleleB <- with(d, (all_AB + (2 * all_BB))
