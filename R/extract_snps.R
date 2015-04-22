@@ -186,26 +186,7 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     ## Group snps by chunk file.
     by_chunk <- split(d$snp, d$file)
 
-    ## =================================================================
-    ## Extraction using pure R.
-    ## =================================================================
-
-    ## extract_from_chunk <- function(k)
-    ## {
-    ##     snps       <- by_chunk[[k]]
-    ##     chunk_file <- names(by_chunk)[k]
-    ##     con        <- gzfile(chunk_file, "r")
-    ##     on.exit(close(con))
-    ##     d <- read.table(con, colClasses = "character",
-    ##                     stringsAsFactors = FALSE)
-    ##     pr1(".")
-    ##     d[d[[2]] %in% snps, , drop = FALSE]
-    ## }
-
-    ## =================================================================
-    ## Extraction using Perl.
-    ## =================================================================
-
+    ## Find path to perl script that does the heavy lifting.
     perl_script <- file.path(find.package("genFun"),
                              "perl", "extract_from_chunk.pl")
 
