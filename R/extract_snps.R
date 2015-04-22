@@ -228,20 +228,44 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         mc.cores = ncore, mc.silent = FALSE)
     pr(" [done]")
 
-    out <- do.call(rbind, ds)
+    names(ds) <- names(by_chunk)        # label by chunk file
 
-    ## Issue a warning unless all snps were found.
-    missing_snps <- unlist(Map(setdiff, by_chunk, lapply(ds, `[[`, 2L)),
-                           use.names = FALSE)
-    if (length(missing_snps)) {
-        not_there <- snp2chunk$snp %in% missing_snps
+    ## Warn if some snps could not be found in "their" chunks.
+    found_snps <- unique(unlist(lapply(ds, `[[`, 2L), use.names = FALSE))
+    snps_not_found_in_chunks <- setdiff(d$snp, found_snps)
+    if (length(snps_not_found_in_chunks)) {
+        not_there <- d$snp %in% snps_not_found_in_chunks
         warning("Some snps could not be found in the corresponding ",
                 "chunk files:\n",
-                format_snps(snp2chunk$snp[not_there],
-                            snp2chunk$chr[not_there],
-                            snp2chunk$chunk[not_there]))
-        attr(out, "missing_snps") <- missing_snps
+                format_snps(d$snp[not_there],
+                            d$chr[not_there],
+                            d$chunk[not_there]))
+        rm(not_there)
     }
 
-    out
+    ## Attach data frame with snps that could not be found to return
+    ## value.
+    if (length(snps_not_in_chunkmap) |
+        length(snps_in_nonexistent_chunks) |
+        length(snps_not_found_in_chunks)) {
+
+        cols <- c("snp", "chr", "chunk")
+        d1 <- snp2chunk[snp2chunk$snp %in% snps_in_nonexistent_chunks,
+                        cols, drop = FALSE]
+        d1$comment <- rep_len("nonexistent chunk file", nrow(d1))
+
+        d2 <- snp2chunk[snp2chunk$snp %in% snps_not_found_in_chunks,
+                        cols, drop = FALSE]
+        d2$comment <- rep_len("not found in chunk file", nrow(d2))
+
+        d3 <- data.frame(snp = snps_not_in_chunkmap,
+                         stringsAsFactors = FALSE)
+        d3$chr     <- rep_len(NA_character_,       nrow(d3))
+        d3$chunk   <- rep_len(NA_character_,       nrow(d3))
+        d3$comment <- rep_len("not in `chunkmap'", nrow(d3))
+
+        attr(ds, "missing_snps") <- rbind(d1, d2, d3)
+    }
+
+    ds
 }
