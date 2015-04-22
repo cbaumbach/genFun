@@ -45,7 +45,10 @@ my $z = new IO::Uncompress::Gunzip $chunk_file
     or die "IO::Uncompress::Gunzip failed: $GunzipError\n";
 while (<$z>) {
     my (undef, $snp, undef) = split / /, $_, 3;
-    print $_ if $selected{$snp};
-    delete $selected{$snp};
-    last unless keys %selected;
+
+    if ($selected{$snp}) {
+        print $_;
+        delete $selected{$snp};
+        last unless keys %selected;
+    }
 }
