@@ -188,16 +188,15 @@ summarize_snptest <- function(filename, chr)
     test_types <- c("frequentist", "bayesian")
     genetic_models <- c("add", "dom", "rec", "gen", "het")
 
-    test_type <- test_types[find_first_match(
-        paste0("^", test_types), names(d))]
+    x <- paste0("^", test_types)
+    test_type <- test_types[find_first_match(x, names(d))]
 
     if (is.na(test_type))
         stop("Unable to determine \"test type\" from: ",
              paste(names(d), collapse = ", "))
 
-    genetic_model <- genetic_models[find_first_match(
-        paste0("^", test_type, "_", genetic_models),
-        names(d))]
+    x <- paste0("^", test_type, "_", genetic_models)
+    genetic_model <- genetic_models[find_first_match(x, names(d))]
 
     if (is.na(genetic_model))
         stop("Unable to determine \"genetic model\" from: ",
