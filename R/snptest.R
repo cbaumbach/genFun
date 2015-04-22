@@ -158,13 +158,6 @@ summarize_snptest <- function(filename, chr)
     ## Local functions.
     ## =================================================================
 
-    ## Remove 1st and last character.
-    trim1 <- function(x)
-    {
-        stopifnot(length(x) == 1L && nchar(x) > 2L)
-        sub("^.(.*).$", "\\1", x, perl = TRUE)
-    }
-
     ## Create column names.
     variable <- function(summary_measure)
     {
