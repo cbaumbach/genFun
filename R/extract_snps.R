@@ -162,10 +162,12 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     first_lines <- unlist(parallel::mclapply(unique(d$file), gzhead,
                                              mc.cores = ncore),
                           use.names = FALSE)
+
     ncols <- unlist(parallel::mclapply(
         first_lines,
         function(x) length(strsplit(x, " ", fixed = TRUE)[[1L]]),
         mc.cores = ncore), use.names = FALSE)
+
     stopifnot(all_neighbors(`==`, ncols))
 
     ## Check that the number of ids in `idfile' corresponds to the
