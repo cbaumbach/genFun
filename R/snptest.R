@@ -143,7 +143,6 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
 
         pr("Percentage of chunks successfully snptest'ed: ",
            sprintf("%.1f%%", 100 * sum(files$done) / nrow(files)))
-
     }
     else {
         pr("All chunks have already been successfully snptest'ed.")
