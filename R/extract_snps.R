@@ -259,13 +259,15 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     extract_from_chunk <- function(k)
     {
         cat(by_chunk[[k]], file = snp_files[k], sep = "\n")
-        con <- pipe(cmd[k], "r")
+
+        ## Create a closed connection.  `read.table' will open it,
+        ## read from it, and close it when done reading.
+        con <- pipe(cmd[k])
 
         tryCatch({
             d <- read.table(con, colClasses = colCl)
         }, finally = {
             file.remove(snp_files[k])
-            close(con)
         })
 
         pr1(".")
