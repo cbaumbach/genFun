@@ -17,12 +17,31 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     if (!is.directory(indir))
         stop("`indir' must be an existing directory with chunk files.")
 
-    ## Check that all chunk map files exist.
-    not_there <- ! file.exists(chunkmap)
-    if (any(not_there))
-        stop("The following files in `chunkmap' don't exist:\n",
-             paste("\t", chunkmap[not_there], collapse = "\n"))
-    rm(not_there)
+    ## Check that `chunkmap' is a valid data frame or file name.
+    if (nuniq(chunkmap_cols) != 3L)
+        stop("`chunkmap_cols' must give the positions of the columns ",
+             "corresponding to snp, chr, and chunk (in this order).")
+
+    if (is.data.frame(chunkmap)) {
+        if (ncol(chunkmap) < 3L)
+            stop("`chunkmap' data frame must have at least 3 colums.")
+
+        if (!all(chunkmap_cols %in% seq_len(ncol(chunkmap))))
+            stop("`chunkmap_cols' must be a valid 3-element index for ",
+                 "`chunkmap'.")
+    }
+    else if (is.character(chunkmap)) {
+        chunkmap_files <- chunkmap
+        not_there <- ! file.exists(chunkmap_files)
+        if (any(not_there))
+            stop("The following `chunkmap' files don't exist:\n",
+                 paste("\t", chunkmap_files[not_there], collapse = "\n"))
+        rm(not_there)
+    }
+    else {
+        stop("`chunkmap' must be a data frame or character vector of ",
+             "file names.")
+    }
 
     ## Check that at least 1 snp was selected for extraction.
     if (length(snps) == 0L)
@@ -81,6 +100,40 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         offset + unlist(lapply(xs, g), use.names = FALSE)
     }
 
+    take_3_columns <- function(d)
+    {
+        if (is.character(d)) {
+            ## Only read snp, chr, and chunk columns.  `fread' doesn't
+            ## care about the order of columns in `select'.  Whether
+            ## it's 1:3 or 3:1, either way it'll come out as 1:3.  Use
+            ## an explicit `sort' to dispell false expectations.  The
+            ## snp, chr, and chunk columns will be in the same
+            ## (relative) order as they were in the original table
+            ## from which they were read.
+            d <- data.table::fread(d, data.table = FALSE,
+                                   select = sort(chunkmap_cols),
+                                   colClasses = "character")
+        }
+        else if (is.data.frame(d)) {
+            ## Remove superfluous columns.  Use `sort(chunkmap_cols)'
+            ## for subsetting so as not to modify the order of the
+            ## remaining columns.
+            if (ncol(d) > 3L)
+                d <- d[sort(chunkmap_cols)]
+        }
+        else {
+            stop("`d' must be either a data frame or a character vector.")
+        }
+
+        ## Assign column names according to `chunkmap_cols'.  For this
+        ## to work it was crucial that we did not modify the order of
+        ## the snp, chr, and chunk columns in the above if-statement.
+        cols <- c("snp", "chr", "chunk")
+        names(d) <- cols[order(chunkmap_cols)]
+
+        d[d$snp %in% snps, cols, drop = FALSE]
+    }
+
     ## =================================================================
     ## Get list of imputed chunk files.
     ## =================================================================
@@ -95,25 +148,19 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     ## =================================================================
     ## Read chunk map files.
     ## =================================================================
-    read_3_columns <- function(f)
-    {
-        ## Only read snp, chr, and chunk columns.
-        d <- data.table::fread(f, data.table = FALSE,
-                               select = chunkmap_cols,
-                               colClasses = "character")
-
-        cols <- c("snp", "chr", "chunk")
-        names(d) <- cols[order(chunkmap_cols)]
-
-        d[d$snp %in% snps, cols, drop = FALSE]
+    if (is.data.frame(chunkmap)) {
+        chunkmap <- take_3_columns(chunkmap)
+    }
+    else {
+        pr("Reading `chunkmap' file",
+           if (length(chunkmap_files) > 1L) "s", " ...")
+        chunkmap <- do.call(
+            rbind, parallel::mclapply(chunkmap_files, take_3_columns,
+                                      mc.cores = ncore,
+                                      mc.allow.recursive = FALSE))
     }
 
-    pr("Reading `chunkmap' file", if (length(chunkmap) > 1L) "s", " ...")
-    snp2chunk <- do.call(
-        rbind, parallel::mclapply(chunkmap, read_3_columns,
-                                  mc.cores = ncore))
-
-    not_there <- ! snps %in% snp2chunk$snp
+    not_there <- ! snps %in% chunkmap$snp
     snps_not_in_chunkmap <- character(0L)
     if (any(not_there)) {
         snps_not_in_chunkmap <- snps[not_there]
@@ -127,17 +174,17 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     ## =================================================================
 
     pr("Mapping snps to chunk files ...")
-    d <- merge(snp2chunk, files, by = c("chr", "chunk"))
+    d <- merge(chunkmap, files, by = c("chr", "chunk"))
 
-    not_there <- ! snp2chunk$snp %in% d$snp
+    not_there <- ! chunkmap$snp %in% d$snp
     snps_in_nonexistent_chunks <- character(0L)
     if (any(not_there)) {
-        snps_in_nonexistent_chunks <- snp2chunk$snp[not_there]
+        snps_in_nonexistent_chunks <- chunkmap$snp[not_there]
         warning("Some `snps' have chr-chunk values in `chunkmap' files ",
                 "that don't match any chunk file in `indir':\n",
-                format_snps(snp2chunk$snp[not_there],
-                            snp2chunk$chr[not_there],
-                            snp2chunk$chunk[not_there]))
+                format_snps(chunkmap$snp[not_there],
+                            chunkmap$chr[not_there],
+                            chunkmap$chunk[not_there]))
     }
     rm(not_there)
 
@@ -252,11 +299,11 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         length(snps_not_found_in_chunks)) {
 
         cols <- c("snp", "chr", "chunk")
-        d1 <- snp2chunk[snp2chunk$snp %in% snps_in_nonexistent_chunks,
+        d1 <- chunkmap[chunkmap$snp %in% snps_in_nonexistent_chunks,
                         cols, drop = FALSE]
         d1$comment <- rep_len("nonexistent chunk file", nrow(d1))
 
-        d2 <- snp2chunk[snp2chunk$snp %in% snps_not_found_in_chunks,
+        d2 <- chunkmap[chunkmap$snp %in% snps_not_found_in_chunks,
                         cols, drop = FALSE]
         d2$comment <- rep_len("not found in chunk file", nrow(d2))
 
