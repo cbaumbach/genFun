@@ -2,6 +2,8 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
                          keep = NULL, idfile = NULL, pattern = "\\.gz$",
                          ncore = 1L, chr_chunk = ".*chr([^_]+)_(\\d+)")
 {
+    t0 <- Sys.time()                    # record starting time
+
     ## =================================================================
     ## Validate arguments.
     ## =================================================================
@@ -266,6 +268,8 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
 
         attr(ds, "missing_snps") <- rbind(d1, d2, d3)
     }
+
+    print(Sys.time() - t0)
 
     ds
 }
