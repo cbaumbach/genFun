@@ -80,8 +80,6 @@ extract_snps(
     chunkmap_cols = c(1L, 3L, 4L),
     keep      = c("person_1", "person_2"),
     idfile    = "path/to/file/with_all_person_ids_in_correct_order.txt",
-    pattern   = "\\\\.gz$",
-    ncore     = 1L,
-    chr_chunk = ".*chr([^_]+)_(\\\\d+)"
+    ncore     = 6L)
 }
 }
