@@ -17,6 +17,12 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     if (!is.directory(indir))
         stop("`indir' must be an existing directory with chunk files.")
 
+    ## Check that `pattern' contain exactly two parenthesized
+    ## subexpressions.
+    if (nsubexp(chr_chunk) != 2L)
+        stop("`chr_chunk' must contain exactly 2 parenthesized ",
+             "subexpressions, one for chromosome and one for chunk.")
+
     ## Check that `chunkmap' is a valid data frame or file name.
     if (nuniq(chunkmap_cols) != 3L)
         stop("`chunkmap_cols' must give the positions of the columns ",
