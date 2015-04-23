@@ -170,7 +170,7 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     snps_not_in_chunkmap <- character(0L)
     if (any(not_there)) {
         snps_not_in_chunkmap <- snps[not_there]
-        warning("Some `snps' were not found in `chunkmap' files: ",
+        warning("Some `snps' were not in `chunkmap': ",
                 paste(snps_not_in_chunkmap, collapse = ", "))
     }
     rm(not_there)
