@@ -52,3 +52,4 @@ while (<$z>) {
         last unless keys %selected;
     }
 }
+close $z;
