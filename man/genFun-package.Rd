@@ -26,6 +26,7 @@ Index:
 chr              Extract chromosome number from file names
 chr2int          Convert chromosome string to integer
 chunk            Extract chunk number from file names
+extract_snps     Extract snps from imputed chunk files
 find_genes       Map SNPs to genes
 int2chr          Convert chromosome from integer to string
 snptest          Run snptest gwas on multiple cores
@@ -60,6 +61,18 @@ chr2int(c("chr1", "chrMT", "chrX", "chrY"), prefix = "chr")
 
 ## chunk
 chunk(c("chr5_path/to/the_chr1_3.txt", "chr5_path/to/the_chr2_4.txt"))
+
+## extract_snps
+\dontrun{
+extract_snps(
+    snps      = c("rs123", "rs456"),
+    indir     = "path/to/directory/with_chunk_files/",
+    chunkmap  = c("path/to/chunkmap_part_1.txt", "path/to/chunkmap_part_2.txt"),
+    chunkmap_cols = c(1L, 3L, 4L),
+    keep      = c("person_1", "person_2"),
+    idfile    = "path/to/file/with_all_person_ids_in_correct_order.txt",
+    ncore     = 6L)
+}
 
 ## find_genes
 d <- read.table(textConnection("\
