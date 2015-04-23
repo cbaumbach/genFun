@@ -170,16 +170,17 @@ summarize_snptest <- function(filename, chr)
     ## Read snptest table.
     ## =================================================================
 
-    ## Read columns as "character" except those few that we need to
-    ## compute summary statistics below.
-    header <- scan(filename, what = character(), nlines = 1L,
-                   quiet = TRUE)
-    colCl <- rep_len("character", length(header))
-    names(colCl) <- header
-    colCl[c("all_AA", "all_AB", "all_BB", "all_NULL")] <- "integer"
-
-    d <- data.table::fread(filename, data.table = FALSE,
-                           colClasses = colCl)
+    ## Let `fread' detect column classes.  This is safe, since `fread'
+    ## will never coerce a column from a higher to a lower type.  In
+    ## other words, if we get values of a type lower than the `true'
+    ## type of the column, it's because all values in the column can
+    ## be represented in the lower type without data loss.  Since the
+    ## values in the lower type represent the same data, we can treat
+    ## them as being equivalent to the higher type for all practical
+    ## purposes, e.g., arithmetic, character operations, rbind, etc.
+    ## Letting `fread' select the lowest possible type ensures that
+    ## the memory footprint of the resulting table will be minimal.
+    d <- data.table::fread(filename, data.table = FALSE)
 
     ## =================================================================
     ## Determine type of snptest analysis performed.
