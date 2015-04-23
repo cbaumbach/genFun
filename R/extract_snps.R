@@ -85,10 +85,18 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     ## table-like string.
     format_snps <- function(snp, chr, chunk)
     {
-        fmt <- "%11s %3s %5s"
-        x <- paste(c(sprintf(fmt, "snp", "chr", "chunk"),
-                     sprintf(fmt, snp, chr, chunk)), collapse = "\n")
-        x
+        ## Choose optimal width for snp column.
+        fmt <- paste0("%", max(nchar(snp)), "s %3s %5s")
+
+        ## Truncate after `max_lines' of output.
+        max_lines <- 10L
+        idx <- seq_len(min(length(snp), max_lines))
+        too_long <- length(snp) > max_lines
+
+        paste(c(sprintf(fmt, "snp", "chr", "chunk"),
+                sprintf(fmt, snp[idx], chr[idx], chunk[idx]),
+                if (too_long) "[... truncated]"),
+              collapse = "\n")
     }
 
     ## Returns the columns in the chunk files corresponding to the
