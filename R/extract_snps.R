@@ -327,7 +327,9 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         d3$chunk   <- rep_len(NA_character_,     nrow(d3))
         d3$comment <- rep_len("not in chunkmap", nrow(d3))
 
-        attr(ds, "missing_snps") <- rbind(d1, d2, d3)
+        d <- rbind(d1, d2, d3)
+        rownames(d) <- NULL
+        attr(ds, "missing_snps") <- d
     }
 
     print(Sys.time() - t0)
