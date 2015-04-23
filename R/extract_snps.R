@@ -289,7 +289,9 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         mc.cores = ncore, mc.silent = FALSE)
     pr(" [done]")
 
-    names(ds) <- names(by_chunk)        # label by chunk file
+    ## Label chunks as `chr<chromosome>_<chunk>'.
+    names(ds) <- paste0("chr", chr(names(by_chunk)),
+                        "_", chunk(names(by_chunk)))
 
     ## Warn if some snps could not be found in "their" chunks.
     found_snps <- unique(unlist(lapply(ds, `[[`, 2L), use.names = FALSE))
