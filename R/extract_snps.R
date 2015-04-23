@@ -283,10 +283,9 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
        length(by_chunk), " chunk", if (length(by_chunk) > 1) "s")
 
     pr1("Chunks: ")
-
     ds <- parallel::mclapply(
         seq_along(by_chunk), extract_from_chunk, mc.preschedule = FALSE,
-        mc.cores = ncore, mc.silent = FALSE)
+        mc.cores = ncore, mc.silent = FALSE, mc.allow.recursive = FALSE)
     pr(" [done]")
 
     ## Label chunks as `chr<chromosome>_<chunk>'.
