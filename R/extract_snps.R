@@ -251,14 +251,18 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
 
     cmd <- paste(perl_script, "-s", snp_files, "-c", names(by_chunk))
 
+    ## Read the first few columns as type "character" and the
+    ## probability triples as type "double".
+    colCl <- rep_len("double", ncols[1L])
+    colCl[seq_len(leading_columns)] <- "character"
+
     extract_from_chunk <- function(k)
     {
         cat(by_chunk[[k]], file = snp_files[k], sep = "\n")
         con <- pipe(cmd[k], "r")
 
         tryCatch({
-            d <- read.table(con, colClasses = "character",
-                            stringsAsFactors = FALSE)
+            d <- read.table(con, colClasses = colCl)
         }, finally = {
             file.remove(snp_files[k])
             close(con)
