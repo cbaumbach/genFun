@@ -315,9 +315,9 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
 
         d3 <- data.frame(snp = snps_not_in_chunkmap,
                          stringsAsFactors = FALSE)
-        d3$chr     <- rep_len(NA_character_,       nrow(d3))
-        d3$chunk   <- rep_len(NA_character_,       nrow(d3))
-        d3$comment <- rep_len("not in `chunkmap'", nrow(d3))
+        d3$chr     <- rep_len(NA_character_,     nrow(d3))
+        d3$chunk   <- rep_len(NA_character_,     nrow(d3))
+        d3$comment <- rep_len("not in chunkmap", nrow(d3))
 
         attr(ds, "missing_snps") <- rbind(d1, d2, d3)
     }
