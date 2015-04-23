@@ -1,5 +1,5 @@
-snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
-                    covs, add_args = NULL, ncore = 1L,
+snptest <- function(indir, sample_file, outdir, pheno, covs,
+                    exclusion_file = NULL, add_args = NULL, ncore = 1L,
                     pattern = "\\.gz$",
                     chr_chunk = ".*chr([^_]+)_(\\d+)",
                     executable = "snptest")
@@ -50,7 +50,6 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
     ## Check that all mandatory arguments were supplied.
     force(indir)
     force(sample_file)
-    force(exclusion_file)
     force(outdir)
     force(pheno)
 
@@ -64,14 +63,14 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
              "the `sample_file' using the `covs' argument to ",
              "`snptest'.  Something like \"-cov_all\" won't work :)")
 
-    ## Remove trailing slash in directory names.
     indir  <- unslash(indir)
     outdir <- unslash(outdir)
 
-    ## Check that all input files and directories exist.
-    stopifnot(all(vapply(c(indir, sample_file, exclusion_file),
-                         file.exists, logical(1L))),
+    stopifnot(file.exists(sample_file),
               is.directory(indir))
+
+    if (!is.null(exclusion_file))
+        stopifnot(file.exists(exclusion_file))
 
     ## Check that snptest executable is known.
     if (system(paste("which", executable),
@@ -124,7 +123,8 @@ snptest <- function(indir, sample_file, exclusion_file, outdir, pheno,
                      "-log", d$log,
                      "-o", d$output,
                      "-pheno", pheno,
-                     "-exclude_samples", exclusion_file,
+                     if (!is.null(exclusion_file))
+                         paste("-exclude_samples", exclusion_file),
                      "-cov_names", paste(covs, collapse = " "),
                      if (!missing(add_args))
                          paste(add_args, collapse = " "))

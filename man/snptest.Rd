@@ -8,9 +8,10 @@
   Run snptest gwas on multiple cores
 }
 \usage{
-snptest(indir, sample_file, exclusion_file, outdir, pheno, covs,
-        add_args = NULL, ncore = 1L, pattern = "\\\\.gz$",
-        chr_chunk = ".*chr([^_]+)_(\\\\d+)", executable = "snptest")
+snptest(indir, sample_file, outdir, pheno, covs,
+        exclusion_file = NULL, add_args = NULL, ncore = 1L,
+        pattern = "\\\\.gz$", chr_chunk = ".*chr([^_]+)_(\\\\d+)",
+        executable = "snptest")
 }
 \arguments{
   \item{indir}{
@@ -18,9 +19,6 @@ snptest(indir, sample_file, exclusion_file, outdir, pheno, covs,
   }
   \item{sample_file}{
     Phenotype file.
-  }
-  \item{exclusion_file}{
-    File with ids of individuals to be excluded from analysis.
   }
   \item{outdir}{
     Directory where snptest output files should go.
@@ -30,6 +28,9 @@ snptest(indir, sample_file, exclusion_file, outdir, pheno, covs,
   }
   \item{covs}{
     Character vector with names of covariates as used in `sample_file'.
+  }
+  \item{exclusion_file}{
+    File with ids of individuals to be excluded from analysis.
   }
   \item{add_args}{
     Additional command-line arguments to snptest.
@@ -99,10 +100,10 @@ library(genFun)
 snptest(
     indir          = "path/to/directory/with/gz-compressed/input/files",
     sample_file    = "path/to/MEN_ONLY_phenotype_file",
-    exclusion_file = "path/to/file/with/exclusion/ids",
     outdir         = "path/to/directory/for/snptest/output/files",
     pheno          = "blood_sugar",
     covs           = c("age", "bmi"),
+    exclusion_file = "path/to/file/with/exclusion/ids",
     add_args       = c("-missing_code NA",
                        "-frequentist 1",
                        "-method expected",

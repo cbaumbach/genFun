@@ -113,10 +113,10 @@ int2chr(c(1:3, 23:25))
 snptest(
     indir          = "path/to/directory/with/gz-compressed/input/files",
     sample_file    = "path/to/MEN_ONLY_phenotype_file",
-    exclusion_file = "path/to/file/with/exclusion/ids",
     outdir         = "path/to/directory/for/snptest/output/files",
     pheno          = "blood_sugar",
     covs           = c("age", "bmi"),
+    exclusion_file = "path/to/file/with/exclusion/ids",
     add_args       = c("-missing_code NA",
                        "-frequentist 1",
                        "-method expected",
