@@ -179,7 +179,8 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     if (any(not_there)) {
         snps_not_in_chunkmap <- snps[not_there]
         warning("Some `snps' were not in `chunkmap': ",
-                paste(snps_not_in_chunkmap, collapse = ", "))
+                paste(snps_not_in_chunkmap, collapse = ", "),
+                immediate. = TRUE)
     }
     rm(not_there)
 
@@ -198,7 +199,8 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
                 "that don't match any chunk file in `indir':\n",
                 format_snps(chunkmap$snp[not_there],
                             chunkmap$chr[not_there],
-                            chunkmap$chunk[not_there]))
+                            chunkmap$chunk[not_there]),
+                immediate. = TRUE)
     }
     rm(not_there)
 
@@ -309,7 +311,8 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
                 "chunk files:\n",
                 format_snps(d$snp[not_there],
                             d$chr[not_there],
-                            d$chunk[not_there]))
+                            d$chunk[not_there]),
+                immediate. = TRUE)
         rm(not_there)
     }
 
