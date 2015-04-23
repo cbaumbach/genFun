@@ -61,9 +61,13 @@ extract_snps(snps, indir, chunkmap, chunkmap_cols = 1:3, keep = NULL,
   per line.
 }
 \value{
-  Returns a data frame containing data for all snps in `snps' that could be
-  extracted from the imputed chunk files in `indir'.  In case some snps
-  could not be found, a warning is issued.
+  Returns a list of data frames.  Each element of the list contains the
+  snps that were extracted from a particular chunk.  The list elements
+  are named as `chr<chromosome>_<chunk>'.  If some snps could not be
+  found, the list will have its `missing_snps' attribute set to a data
+  frame containing the snps that could not be found.  The data frame
+  contains the columns with snp id, chr, chunk, and a comment column
+  stating the reason why the snp could not be found.
 }
 \examples{
 library(genFun)
