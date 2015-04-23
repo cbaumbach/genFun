@@ -306,7 +306,8 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     }
 
     ## Attach data frame with snps that could not be found to return
-    ## value.
+    ## value.  Mention the reason why a snp was not found in a
+    ## `comment' column.
     if (length(snps_not_in_chunkmap) |
         length(snps_in_nonexistent_chunks) |
         length(snps_not_found_in_chunks)) {
