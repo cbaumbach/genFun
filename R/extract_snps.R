@@ -214,14 +214,14 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     ## =================================================================
 
     ## Check that all chunk files have the same number of columns.
-    first_lines <- unlist(parallel::mclapply(unique(d$file), gzhead,
-                                             mc.cores = ncore),
-                          use.names = FALSE)
-
-    ncols <- unlist(parallel::mclapply(
-        first_lines,
-        function(x) length(strsplit(x, " ", fixed = TRUE)[[1L]]),
-        mc.cores = ncore), use.names = FALSE)
+    ncols <- vapply(unique(d$file),
+                    function(f)
+                    {
+                        con <- gzfile(f, "rb")
+                        on.exit(close(con))
+                        nfields(con, sep = " ")
+                    },
+                    integer(1L))
 
     stopifnot(all_neighbors(`==`, ncols))
 
