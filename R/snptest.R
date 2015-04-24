@@ -151,7 +151,8 @@ snptest <- function(indir, sample_file, outdir, pheno, covs,
     files
 }
 
-summarize_snptest <- function(filename, chr)
+summarize_snptest <- function(filename, chr = NULL, old2new = NULL,
+                              select = !is.null(old2new), hook = NULL)
 {
     ## =================================================================
     ## Local functions.
@@ -165,6 +166,8 @@ summarize_snptest <- function(filename, chr)
         ## below).
         paste0(test_type, "_", genetic_model, "_", summary_measure)
     }
+    if (select && is.null(old2new))
+        stop("You must specify `old2new' to select columns.")
 
     ## =================================================================
     ## Read snptest table.
@@ -205,7 +208,8 @@ summarize_snptest <- function(filename, chr)
     ## =================================================================
     ## Add additional columns.
     ## =================================================================
-    d$chromosome <- chr                 # use correct chromosome
+    if (!is.null(chr))
+        d$chromosome <- chr
 
     ## Allele frequency of coding allele, i.e., `alleleB' in snptest.
     d$freq_alleleB <- with(d, (all_AB + (2 * all_BB))
@@ -217,7 +221,7 @@ summarize_snptest <- function(filename, chr)
     d$imputed <- as.integer(d$alternate_ids == "---")
 
     ## =================================================================
-    ## Return a selection of colums.
+    ## Rename, select, and reorder.
     ## =================================================================
     hwe <- "cohort_1_hwe"
     cols <- c("rsid", "chromosome", "position", "alleleA", "alleleB",
@@ -227,6 +231,33 @@ summarize_snptest <- function(filename, chr)
               "freq_alleleB", "imputed", "callrate")
 
     d[, cols, drop = FALSE]
+    if (!is.null(old2new)) {
+        ## If `select' is TRUE, there might be unnamed elements in
+        ## `old2new' whose only purpose is to select and reorder
+        ## columns.  In that case, we want to ignore any warnings due
+        ## to non
+        if (select && (is.null(names(old2new))
+                       || "" %in% names(old2new))) {
+            names(d) <- rename(d, old2new, warn = FALSE)
+        }
+        else {
+            ## Warnings that are not due to the above circumstances
+            ## should not be muffled.
+            names(d) <- rename(d, old2new)
+        }
+
+        ## Select and reorder a subset of colums.
+        if (select)
+            d <- d[, old2new, drop = FALSE]
+    }
+
+    ## =================================================================
+    ## Feed data frame to user-supplied function before returning.
+    ## =================================================================
+    if (!is.null(hook))
+        return(hook(d))
+
+    d
 }
 
 combine_snptest <- function(indir, outdir, pattern, ncore = 1L,
