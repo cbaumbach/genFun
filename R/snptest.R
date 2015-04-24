@@ -154,18 +154,6 @@ snptest <- function(indir, sample_file, outdir, pheno, covs,
 summarize_snptest <- function(filename, chr = NULL, old2new = NULL,
                               select = !is.null(old2new), hook = NULL)
 {
-    ## =================================================================
-    ## Local functions.
-    ## =================================================================
-
-    ## Create column names.
-    variable <- function(summary_measure)
-    {
-        ## `test_type' and `genetic_model' are defined and looked up
-        ## in the environment in which `variable' was defined (see
-        ## below).
-        paste0(test_type, "_", genetic_model, "_", summary_measure)
-    }
     if (select && is.null(old2new))
         stop("You must specify `old2new' to select columns.")
 
@@ -186,26 +174,6 @@ summarize_snptest <- function(filename, chr = NULL, old2new = NULL,
     d <- data.table::fread(filename, data.table = FALSE)
 
     ## =================================================================
-    ## Determine type of snptest analysis performed.
-    ## =================================================================
-    test_types <- c("frequentist", "bayesian")
-    genetic_models <- c("add", "dom", "rec", "gen", "het")
-
-    x <- paste0("^", test_types)
-    test_type <- test_types[find_first_match(x, names(d))]
-
-    if (is.na(test_type))
-        stop("Unable to determine \"test type\" from: ",
-             paste(names(d), collapse = ", "))
-
-    x <- paste0("^", test_type, "_", genetic_models)
-    genetic_model <- genetic_models[find_first_match(x, names(d))]
-
-    if (is.na(genetic_model))
-        stop("Unable to determine \"genetic model\" from: ",
-             paste(names(d), collapse = ", "))
-
-    ## =================================================================
     ## Add additional columns.
     ## =================================================================
     if (!is.null(chr))
@@ -223,14 +191,7 @@ summarize_snptest <- function(filename, chr = NULL, old2new = NULL,
     ## =================================================================
     ## Rename, select, and reorder.
     ## =================================================================
-    hwe <- "cohort_1_hwe"
-    cols <- c("rsid", "chromosome", "position", "alleleA", "alleleB",
-              "average_maximum_posterior_call", "info", "all_total",
-              "missing_data_proportion", if (hwe %in% names(d)) hwe,
-              variable(c("beta_1", "se_1", "pvalue")),
-              "freq_alleleB", "imputed", "callrate")
 
-    d[, cols, drop = FALSE]
     if (!is.null(old2new)) {
         ## If `select' is TRUE, there might be unnamed elements in
         ## `old2new' whose only purpose is to select and reorder
