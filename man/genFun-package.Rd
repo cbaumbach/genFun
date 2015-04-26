@@ -23,14 +23,15 @@ Built: \tab R 3.1.1; ; 2015-02-13 20:24:05 UTC; unix\cr
 
 Index:
 \preformatted{
-chr              Extract chromosome number from file names
-chr2int          Convert chromosome string to integer
-chunk            Extract chunk number from file names
-extract_snps     Extract snps from imputed chunk files
-find_genes       Map SNPs to genes
-int2chr          Convert chromosome from integer to string
-snptest          Run snptest gwas on multiple cores
-unslash          Remove trailing slash from directory names
+chr               Extract chromosome number from file names
+chr2int           Convert chromosome string to integer
+chunk             Extract chunk number from file names
+combine_snptest   Summarize and combine snptest output by chromosome
+extract_snps      Extract snps from imputed chunk files
+find_genes        Map SNPs to genes
+int2chr           Convert chromosome from integer to string
+snptest           Run snptest gwas on multiple cores
+unslash           Remove trailing slash from directory names
 }
 }
 \author{
@@ -61,6 +62,35 @@ chr2int(c("chr1", "chrMT", "chrX", "chrY"), prefix = "chr")
 
 ## chunk
 chunk(c("chr5_path/to/the_chr1_3.txt", "chr5_path/to/the_chr2_4.txt"))
+
+## combine_snptest
+\dontrun{
+#            OLD NAME                 NEW NAME
+old2new <- c(rsid                   = "snp",
+             chromosome             = "chr",
+             position               = "pos",
+                                      "imputed",
+                                      "callrate",
+             freq_alleleB           = "coding_freq",
+             frequentist_add_beta_1 = "beta",
+             frequentist_add_se_1   = "se",
+             frequentist_add_pvalue = "pval")
+
+# Custom `hook' function.
+drop_snps_without_pvalue <- function(d)
+{
+    d[!is.na(d$pval), , drop = FALSE]
+}
+
+combine_snptest(indir    = "path/to/snptest_output_files",
+                outdir   = "dir/where/output/should_go",
+                ncore    = 6L,
+                old2new  = old2new,
+                select   = TRUE,
+                template = "cohort_consortium_date_chr<CHROMOSOME>.txt.gz",
+                gzip     = TRUE,
+                hook     = drop_snps_without_pvalue)
+}
 
 ## extract_snps
 \dontrun{

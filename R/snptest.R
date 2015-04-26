@@ -221,8 +221,12 @@ summarize_snptest <- function(filename, chr = NULL, old2new = NULL,
     d
 }
 
-combine_snptest <- function(indir, outdir, pattern, ncore = 1L,
-                              old2new, reorder = FALSE, gzip = FALSE)
+combine_snptest <- function(indir, outdir, ncore = 1L, old2new = NULL,
+                            select = !is.null(old2new),
+                            pattern = "^chr.*\\.txt$",
+                            template = "chr<CHROMOSOME>.txt",
+                            chr_chunk = ".*chr([^_]+)_(\\d+)",
+                            gzip = FALSE, hook = NULL)
 {
     ## =================================================================
     ## Validate user-supplied arguments.
@@ -232,24 +236,39 @@ combine_snptest <- function(indir, outdir, pattern, ncore = 1L,
     indir  <- unslash(indir)
     outdir <- unslash(outdir)
 
-    ## Check that directories exist.
+    if (nsubexp(chr_chunk) != 2L)
+        stop("`chr_chunk' must contain exactly 2 parenthesized ",
+             "subexpressions.")
+
+    if (select && is.null(old2new))
+        stop("You must specify `old2new' to select columns.")
+
+    if (gzip && !grepl("\\.gz$", template))
+        stop("You want to use gzip: `template' must end in \".gz\"")
+
     stopifnot(is.directory(indir))
     mkdir(outdir)
-    stopifnot(is.directory(outdir))
-
-    if (reorder && missing(old2new))
-        stop("You must specify `old2new' to reorder columns.")
-
-    if (gzip && !grepl("\\.gz$", pattern))
-        stop("You want to use gzip: `pattern' must end in \".gz\"")
 
     ## =================================================================
-    ## Find output file prefix and suffix from `pattern'.
+    ## Local helper functions.
     ## =================================================================
-    placeholder <- "CHROMOSOME"
-    stopifnot(grepl(placeholder, pattern, fixed = TRUE))
 
-    x <- unlist(strsplit(pattern, placeholder, fixed = TRUE))
+    ## Build functions for extracting chromosome and chunk number from
+    ## input chunk file names.
+    extract <- function(k)
+    {
+        function(xs) maybe(as.integer, submatch(chr_chunk, xs)[, k])
+    }
+    chr   <- extract(1L)
+    chunk <- extract(2L)
+
+    ## =================================================================
+    ## Find output file prefix and suffix from `template'.
+    ## =================================================================
+    placeholder <- "<CHROMOSOME>"
+    stopifnot(grepl(placeholder, template, fixed = TRUE))
+
+    x <- unlist(strsplit(template, placeholder, fixed = TRUE))
     stopifnot(length(x) == 2L)
     prefix <- x[1L]
     suffix <- x[2L]
@@ -257,7 +276,7 @@ combine_snptest <- function(indir, outdir, pattern, ncore = 1L,
     ## =================================================================
     ## Put snptest files into data frame to simplify manipulation.
     ## =================================================================
-    infiles <- list.files(indir, "\\.txt", full.names = TRUE)
+    infiles <- list.files(indir, pattern, full.names = TRUE)
     files <- data.frame(
         chr   = chr(infiles),
         chunk = chunk(infiles),
@@ -266,26 +285,27 @@ combine_snptest <- function(indir, outdir, pattern, ncore = 1L,
     files <- files[order(files$chr, files$chunk), ]
 
     ## =================================================================
-    ## Process snptest tables by chromosome.
+    ## Process snptest output.
     ## =================================================================
-    for (chr in sort(unique(files$chr))) {
 
-        pr("Processing snptest output files for chromosome ", chr)
+    pr1("Chromosomes: ")
+    for (chrom in sort(unique(files$chr))) {
+
+        pr1(chrom, " ")
 
         d <- do.call(rbind, parallel::mclapply(
-            files$input[files$chr == chr],
-            summarize_snptest, chr, mc.preschedule = FALSE,
-            mc.cores = ncore, mc.silent = FALSE))
+            files$input[files$chr == chrom],
+            summarize_snptest,
+            chr     = chrom,
+            old2new = old2new,
+            select  = select,
+            hook    = hook,
+            mc.cores           = ncore,
+            mc.silent          = FALSE,
+            mc.preschedule     = FALSE,
+            mc.allow.recursive = FALSE))
 
-        ## Rename and reorder columns.
-        if (!missing(old2new)) {
-            names(d) <- rename(d, old2new)
-            if (reorder)
-                d <- d[, old2new, drop = FALSE]
-        }
-
-        ## Write to disk.
-        outfile <- file.path(outdir, paste0(prefix, chr, suffix))
+        outfile <- file.path(outdir, paste0(prefix, chrom, suffix))
 
         if (gzip) con <- gzfile(outfile)
         else      con <- file(outfile)
@@ -293,4 +313,5 @@ combine_snptest <- function(indir, outdir, pattern, ncore = 1L,
         write.table(d, con, quote = FALSE, sep = "\t",
                     row.names = FALSE, col.names = TRUE)
     }
+    pr()
 }

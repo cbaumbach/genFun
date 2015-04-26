@@ -3,6 +3,7 @@ import(miscFun, treeFun)
 export("chr",
        "chr2int",
        "chunk",
+       "combine_snptest",
        "dot_attributes",
        "extract_snps",
        "find_genes",
