@@ -59,6 +59,15 @@ extract_snps(snps, indir, chunkmap, chunkmap_cols = 1:3, keep = NULL,
 
   The `idfile' must not have a header and must contain one identifier
   per line.
+
+  If `keep' is specified, the order of individuals in the output file
+  with extracted snps is the same as in the original chunk file except
+  that individuals that are not in `keep' were removed.  Suppose
+  \code{all_ids} contains all individual ids in the order in which they
+  occur in the original chunk files.  Then \code{all_ids[all_ids \%in\%
+  keep]} contains the individuals ids in the order in which they occur
+  in the output file with extracted snps.  If `keep' is not specified,
+  the order of individuals is the same as in the original chunk file.
 }
 \value{
   Returns a list of data frames.  Each element of the list contains the
