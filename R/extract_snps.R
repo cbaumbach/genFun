@@ -218,7 +218,7 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
 
     if (extract_individuals) {
         selected_columns <- c(seq_len(leading_columns),
-                              pos2col(match(keep, ids)))
+                              pos2col(which(ids %in% keep)))
     }
 
     ## =================================================================
