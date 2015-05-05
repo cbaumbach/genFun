@@ -86,9 +86,9 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     format_snps <- function(snp, chr, chunk)
     {
         ## Choose optimal column width.
-        fmt <- paste0("%", max(nchar(snp),   "snp"),   "s ",
-                      "%", max(nchar(chr),   "chr"),   "s ",
-                      "%", max(nchar(chunk), "chunk"), "s")
+        fmt <- paste0("%", max(nchar(snp),   nchar("snp")),   "s ",
+                      "%", max(nchar(chr),   nchar("chr")),   "s ",
+                      "%", max(nchar(chunk), nchar("chunk")), "s")
 
         ## Truncate after `max_lines' of output.
         max_lines <- 10L
