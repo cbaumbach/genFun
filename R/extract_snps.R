@@ -258,8 +258,10 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
                              "perl", "extract_from_chunk.pl")
 
     ## Create temporary file names before running in parallel.
-    snp_files <- tempfile(rep_len("extract_snps_", length(by_chunk)),
-                          tmpdir = "/tmp")
+    snp_files <- tempfile(
+        paste0("extract_snps_from_chunk_", seq_along(by_chunk),
+               "_of_", length(by_chunk), "_"),
+        tmpdir = "/tmp")
 
     cmd <- paste(perl_script, "-s", snp_files, "-c", names(by_chunk))
 
