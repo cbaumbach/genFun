@@ -26,7 +26,7 @@ find_genes <- function(d, genes, chr1 = "chr", pos = "pos", out = "genes",
                     is.na(genes[[start]]) |
                     is.na(genes[[end]])   |
                     is.na(genes[[id]])
-    genes <- subset(genes, !any_missings)
+    genes <- genes[!any_missings, , drop = FALSE]
 
     d[[out]] <- NA
     for (k in sort(unique(d[[chr1]]))) {
