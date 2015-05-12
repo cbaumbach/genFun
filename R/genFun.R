@@ -30,6 +30,7 @@ find_genes <- function(d, genes, chr1 = "chr", pos = "pos", out = "genes",
 
     d[[out]] <- NA
     for (k in sort(unique(d[[chr1]]))) {
+        pr("Chromosome ", k)
         idx <- d[[chr1]] == k
         idx[is.na(idx)] <- FALSE
         gidx <- genes[[chr2]] == k
