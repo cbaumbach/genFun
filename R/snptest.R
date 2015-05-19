@@ -226,7 +226,8 @@ combine_snptest <- function(indir, outdir, ncore = 1L, old2new = NULL,
                             pattern = "^chr.*\\.txt$",
                             template = "chr<CHROMOSOME>.txt",
                             chr_chunk = ".*chr([^_]+)_(\\d+)",
-                            gzip = FALSE, hook = NULL)
+                            gzip = FALSE, hook = NULL,
+                            overwrite = FALSE)
 {
     ## =================================================================
     ## Validate user-supplied arguments.
@@ -293,6 +294,15 @@ combine_snptest <- function(indir, outdir, ncore = 1L, old2new = NULL,
 
         pr1(chrom, " ")
 
+        outfile <- file.path(outdir, paste0(prefix, chrom, suffix))
+
+        if (!overwrite && file.exists(outfile)) {
+            pr()
+            pr("File already exists: ", outfile)
+            pr("Skipping ...")
+            next
+        }
+
         d <- do.call(rbind, parallel::mclapply(
             files$input[files$chr == chrom],
             summarize_snptest,
@@ -304,8 +314,6 @@ combine_snptest <- function(indir, outdir, ncore = 1L, old2new = NULL,
             mc.silent          = FALSE,
             mc.preschedule     = FALSE,
             mc.allow.recursive = FALSE))
-
-        outfile <- file.path(outdir, paste0(prefix, chrom, suffix))
 
         if (gzip) con <- gzfile(outfile)
         else      con <- file(outfile)

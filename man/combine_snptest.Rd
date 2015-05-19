@@ -16,7 +16,7 @@ combine_snptest(indir, outdir, ncore = 1L, old2new = NULL,
                 select = !is.null(old2new), pattern = "^chr.*\\\\.txt$",
                 template = "chr<CHROMOSOME>.txt",
                 chr_chunk = ".*chr([^_]+)_(\\\\d+)", gzip = FALSE,
-                hook = NULL)
+                hook = NULL, overwrite = FALSE)
 }
 \arguments{
   \item{indir}{
@@ -55,6 +55,11 @@ combine_snptest(indir, outdir, ncore = 1L, old2new = NULL,
   }
   \item{hook}{
     Function accepting and returning a data frame (see Details).
+  }
+  \item{overwrite}{
+    If TRUE, pre-existing chromosome output files will be overwritten.
+    The default is to skip chromosomes for which output files already
+    exist.
   }
 }
 \details{
