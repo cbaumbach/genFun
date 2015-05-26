@@ -8,7 +8,7 @@
   Run snptest gwas on multiple cores
 }
 \usage{
-snptest(indir, sample_file, outdir, pheno, covs,
+snptest(indir, sample_file, outdir, pheno, covs = NULL,
         exclusion_file = NULL, add_args = NULL, ncore = 1L,
         pattern = "\\\\.gz$", chr_chunk = ".*chr([^_]+)_(\\\\d+)",
         executable = "snptest")

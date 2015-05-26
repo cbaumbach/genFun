@@ -1,4 +1,4 @@
-snptest <- function(indir, sample_file, outdir, pheno, covs,
+snptest <- function(indir, sample_file, outdir, pheno, covs = NULL,
                     exclusion_file = NULL, add_args = NULL, ncore = 1L,
                     pattern = "\\.gz$",
                     chr_chunk = ".*chr([^_]+)_(\\d+)",
@@ -53,12 +53,10 @@ snptest <- function(indir, sample_file, outdir, pheno, covs,
     force(outdir)
     force(pheno)
 
-    ## Force user to explicitly specify all covariates via `covs'.
-    if (missing(covs) ||                           # not specified
-        length(covs) == 0L ||                      # 0-length
-        all(grepl("^\\s*$", covs, perl = TRUE)) || # all empty
-        ## attempt to override `covs'
-        (!is.null(add_args) && any(grepl("-cov_all", add_args))))
+    ## Force the user to be explicit about which covariates he wants
+    ## to include in the model.  Intercept attempts to specify all
+    ## covariates via "-cov_all".
+    if (!is.null(add_args) && any(grepl("-cov_all", add_args)))
         stop("You must specify the names of all covariates as used in ",
              "the `sample_file' using the `covs' argument to ",
              "`snptest'.  Something like \"-cov_all\" won't work :)")
@@ -113,21 +111,30 @@ snptest <- function(indir, sample_file, outdir, pheno, covs,
 
         d <- files[!files$done, , drop = FALSE]
 
-        ## Assemble snptest commands, one per chunk.
-        covsum <- paste(covs, collapse = " + ")
-        analysis_name <- shQuote(paste(pheno, "~ 1 +", covsum))
+        ## Assemble shell commands, one per input chunk file.
+        cmd <- paste(
+            executable,
 
-        cmd <- paste(executable,
-                     "-analysis_name", analysis_name,
-                     "-data", d$input, sample_file,
-                     "-log", d$log,
-                     "-o", d$output,
-                     "-pheno", pheno,
-                     if (!is.null(exclusion_file))
-                         paste("-exclude_samples", exclusion_file),
-                     "-cov_names", paste(covs, collapse = " "),
-                     if (!missing(add_args))
-                         paste(add_args, collapse = " "))
+            "-analysis_name",
+            if (is.null(covs))
+                shQuote(paste(pheno, "~ 1"))
+            else
+                shQuote(paste(pheno, "~ 1 +",
+                              paste(covs, collapse = " + "))),
+
+            "-data", d$input, sample_file,
+            "-log", d$log,
+            "-o", d$output,
+            "-pheno", pheno,
+
+            if (!is.null(exclusion_file))
+                paste("-exclude_samples", exclusion_file),
+
+            if (!is.null(covs))
+                paste("-cov_names", paste(covs, collapse = " ")),
+
+            if (!missing(add_args))
+                paste(add_args, collapse = " "))
 
         ncore <- min(ncore, length(cmd))
         pr("Running snptest on ", ncore, " cores ...")
