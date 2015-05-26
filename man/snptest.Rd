@@ -50,6 +50,9 @@ snptest(indir, sample_file, outdir, pheno, covs = NULL,
   }
 }
 \details{
+  Function parameters without default values are mandatory.  All other
+  parameters are optional.
+
   Sometimes you do not want all chunk files in `indir' to be analyzed.
   A typical reason would be that different chunk files need to be run
   with different snptest options.  If you are able to specify a regular
