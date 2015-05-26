@@ -171,7 +171,8 @@ summarize_snptest <- function(filename, chr = NULL, old2new = NULL,
     ## purposes, e.g., arithmetic, character operations, rbind, etc.
     ## Letting `fread' select the lowest possible type ensures that
     ## the memory footprint of the resulting table will be minimal.
-    d <- data.table::fread(filename, data.table = FALSE)
+    d <- data.table::fread(filename, data.table = FALSE,
+                           verbose = FALSE, showProgress = FALSE)
 
     ## =================================================================
     ## Add additional columns.
