@@ -117,10 +117,11 @@ snptest <- function(indir, sample_file, outdir, pheno, covs = NULL,
 
             "-analysis_name",
             if (is.null(covs))
-                shQuote(paste(pheno, "~ 1"))
+                shQuote(paste(pheno, "~ 1 + snp"))
             else
                 shQuote(paste(pheno, "~ 1 +",
-                              paste(covs, collapse = " + "))),
+                              paste(covs, collapse = " + "),
+                              "+ snp")),
 
             "-data", d$input, sample_file,
             "-log", d$log,
