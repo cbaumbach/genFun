@@ -300,8 +300,8 @@ extract_snps <- function(snps, indir, outdir, chunkmap, idfile,
     by_chunk <- split(d$snp, d$file)
 
     ## Find path to perl script that does the heavy lifting.
-    perl_script <- file.path(find.package("genFun"),
-                             "perl", "extract_from_chunk.pl")
+    perl_script <- system.file(file.path("perl", "extract_from_chunk.pl"),
+                               package = "genFun", mustWork = TRUE)
 
     ## Create temporary file names before running in parallel.
     snp_files <- tempfile(
