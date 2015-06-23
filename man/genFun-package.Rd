@@ -97,10 +97,11 @@ combine_snptest(indir    = "path/to/snptest_output_files",
 extract_snps(
     snps      = c("rs123", "rs456"),
     indir     = "path/to/directory/with_chunk_files/",
+    outdir    = "path/where/extracted/chunk/files/should/go",
     chunkmap  = c("path/to/chunkmap_part_1.txt", "path/to/chunkmap_part_2.txt"),
-    chunkmap_cols = c(1L, 3L, 4L),
-    keep      = c("person_1", "person_2"),
     idfile    = "path/to/file/with_all_person_ids_in_correct_order.txt",
+    keep      = c("person_1", "person_2"),
+    chunkmap_cols = c(1L, 3L, 4L),
     ncore     = 6L)
 }
 

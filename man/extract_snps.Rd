@@ -8,8 +8,8 @@
   Extract snps from imputed chunk files
 }
 \usage{
-extract_snps(snps, indir, chunkmap, chunkmap_cols = 1:3, keep = NULL,
-             idfile = NULL, pattern = "\\\\.gz$", ncore = 1L,
+extract_snps(snps, indir, outdir, chunkmap, idfile, keep = NULL,
+             chunkmap_cols = 1:3, pattern = "\\\\.gz$", ncore = 1L,
              chr_chunk = ".*chr([^_]+)_(\\\\d+)")
 }
 \arguments{
@@ -19,21 +19,24 @@ extract_snps(snps, indir, chunkmap, chunkmap_cols = 1:3, keep = NULL,
   \item{indir}{
     Directory with gz-compressed chunk files.
   }
+  \item{outdir}{
+    Directory where extracted chunk files should go.
+  }
   \item{chunkmap}{
     Paths to files mapping snps to chromosomes and chunks.
   }
-  \item{chunkmap_cols}{
-    Length-3 integer vector naming the positions of the columns in the
-    `chunkmap' files corresponding to snp identifier, chromosome, and
-    chunk number.
+  \item{idfile}{
+    Path to file listing individual identifiers in the order in which
+    their snp data appears in the imputed chunk files.
   }
   \item{keep}{
     Character vector with identifiers of individuals for which to
     extract snps.
   }
-  \item{idfile}{
-    Path to file listing individual identifiers in the order in which
-    their snp data appears in the imputed chunk files.
+  \item{chunkmap_cols}{
+    Length-3 integer vector naming the positions of the columns in the
+    `chunkmap' files corresponding to snp identifier, chromosome, and
+    chunk number.
   }
   \item{pattern}{
     Regex pattern used to match input chunk files in `indir'.
@@ -58,25 +61,14 @@ extract_snps(snps, indir, chunkmap, chunkmap_cols = 1:3, keep = NULL,
   `chunkmap' files must not contain any numbers in the column names.
 
   The `idfile' must not have a header and must contain one identifier
-  per line.
-
-  If `keep' is specified, the order of individuals in the output file
-  with extracted snps is the same as in the original chunk file except
-  that individuals that are not in `keep' were removed.  Suppose
-  \code{all_ids} contains all individual ids in the order in which they
-  occur in the original chunk files.  Then \code{all_ids[all_ids \%in\%
-  keep]} contains the individuals ids in the order in which they occur
-  in the output file with extracted snps.  If `keep' is not specified,
-  the order of individuals is the same as in the original chunk file.
+  per line.  The order of individuals in the extracted chunk files will
+  be written to the file `order_of_individuals.txt' in `outdir'.
 }
 \value{
-  Returns a list of data frames.  Each element of the list contains the
-  snps that were extracted from a particular chunk.  The list elements
-  are named as `chr<chromosome>_<chunk>'.  If some snps could not be
-  found, the list will have its `missing_snps' attribute set to a data
-  frame containing the snps that could not be found.  The data frame
-  contains the columns with snp id, chr, chunk, and a comment column
-  stating the reason why the snp could not be found.
+  Returns `NULL' unless some snps could not be extracted in which case
+  a data frame is returned.  The data frame contains the columns `snp',
+  `chr', `chunk', and `comment'.  The comment column states the reason
+  why a snp could not be extracted.
 }
 \examples{
 library(genFun)
@@ -85,10 +77,11 @@ library(genFun)
 extract_snps(
     snps      = c("rs123", "rs456"),
     indir     = "path/to/directory/with_chunk_files/",
+    outdir    = "path/where/extracted/chunk/files/should/go",
     chunkmap  = c("path/to/chunkmap_part_1.txt", "path/to/chunkmap_part_2.txt"),
-    chunkmap_cols = c(1L, 3L, 4L),
-    keep      = c("person_1", "person_2"),
     idfile    = "path/to/file/with_all_person_ids_in_correct_order.txt",
+    keep      = c("person_1", "person_2"),
+    chunkmap_cols = c(1L, 3L, 4L),
     ncore     = 6L)
 }
 }
