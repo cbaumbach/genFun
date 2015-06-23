@@ -17,7 +17,7 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     if (!is.directory(indir))
         stop("`indir' must be an existing directory with chunk files.")
 
-    ## Check that `pattern' contain exactly two parenthesized
+    ## Check that `pattern' contains exactly two parenthesized
     ## subexpressions.
     if (nsubexp(chr_chunk) != 2L)
         stop("`chr_chunk' must contain exactly 2 parenthesized ",
