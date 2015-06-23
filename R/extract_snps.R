@@ -1,6 +1,7 @@
-extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
-                         keep = NULL, idfile = NULL, pattern = "\\.gz$",
-                         ncore = 1L, chr_chunk = ".*chr([^_]+)_(\\d+)")
+extract_snps <- function(snps, indir, outdir, chunkmap, idfile,
+                         keep = NULL, chunkmap_cols = 1:3,
+                         pattern = "\\.gz$", ncore = 1L,
+                         chr_chunk = ".*chr([^_]+)_(\\d+)")
 {
     t0 <- Sys.time()                    # record starting time
 
@@ -16,6 +17,21 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     ## Check that input directory exists.
     if (!is.directory(indir))
         stop("`indir' must be an existing directory with chunk files.")
+
+
+    if (missing(outdir))
+        stop("You must specify an directory for output via `outdir'.")
+    else
+        outdir <- unslash(outdir)
+
+    ## Check if file with order of individuals already exists.
+    id_outfile <- file.path(outdir, "order_of_individuals.txt")
+
+    if (file.exists(outdir) && is.directory(outdir)) {
+        if (file.exists(id_outfile))
+            stop("File already exists: ", id_outfile)
+    }
+    else mkdir(outdir)
 
     ## Check that `pattern' contains exactly two parenthesized
     ## subexpressions.
@@ -161,6 +177,14 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         file  = chunk_files,
         stringsAsFactors = FALSE)
 
+    ## Create chunk -> outfile map.
+    chunk_files <- unique(files$file)
+    chunk2outfile <- file.path(outdir, paste0("chr", chr(chunk_files),
+                                              "_", chunk(chunk_files),
+                                              ".txt.gz"))
+    names(chunk2outfile) <- chunk_files
+    rm(chunk_files)
+
     ## =================================================================
     ## Read chunk map files.
     ## =================================================================
@@ -208,6 +232,14 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
 
     d <- d[order(d$chr, d$chunk), , drop = FALSE]
 
+    ## Stop if `outdir' contains files that would be overwritten.
+    future_outfiles <- chunk2outfile[unique(d$file)]
+    existing_outfiles <- future_outfiles[file.exists(future_outfiles)]
+    if (length(existing_outfiles) > 0L)
+        stop("Some chunks seem to have already been extracted into ",
+             "`outdir':\n\t", paste0(existing_outfiles, collapse = "\n\t"))
+    rm(future_outfiles, existing_outfiles)
+
     ## =================================================================
     ## Determine columns to be extracted from chunk files.
     ## =================================================================
@@ -219,6 +251,20 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     if (extract_individuals) {
         selected_columns <- c(seq_len(leading_columns),
                               pos2col(which(ids %in% keep)))
+
+        ## Write selected columns to temporary file to be read by perl
+        ## script.
+        column_file <- tempfile("selected_columns_", tmpdir = "/tmp")
+        cat(selected_columns, sep = "\n", file = column_file)
+    }
+
+
+    ## Write order of individuals to file in output directory.
+    if (extract_individuals) {
+        cat(ids[ids %in% keep], sep = "\n", file = id_outfile)
+    }
+    else {
+        cat(ids, sep = "\n", file = id_outfile)
     }
 
     ## =================================================================
@@ -263,7 +309,13 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
                "_of_", length(by_chunk), "_"),
         tmpdir = "/tmp")
 
-    cmd <- paste(perl_script, "-s", snp_files, "-c", names(by_chunk))
+    cmd <- paste(perl_script,
+                 "-s", snp_files,
+                 "-c", names(by_chunk),
+                 "-o", chunk2outfile[names(by_chunk)])
+
+    if (extract_individuals)
+        cmd <- paste(cmd, "-i", column_file)
 
     ## Read the first few columns as type "character" and the
     ## probability triples as type "double".
@@ -279,17 +331,14 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         con <- pipe(cmd[k])
 
         tryCatch({
-            d <- read.table(con, colClasses = colCl)
+            snps_not_found <- scan(con, character(), quiet = TRUE)
         }, finally = {
             file.remove(snp_files[k])
         })
 
         pr1(".")
 
-        if (extract_individuals)
-            d[d[[2]] %in% snps, selected_columns, drop = FALSE]
-        else
-            d[d[[2]] %in% snps, , drop = FALSE]
+        snps_not_found
     }
 
     pr("Using ", ncore, " core", if (ncore > 1) "s", " to search ",
@@ -297,18 +346,15 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
        length(by_chunk), " chunk", if (length(by_chunk) > 1) "s")
 
     pr1("Chunks: ")
-    ds <- parallel::mclapply(
+    snps_not_found_in_chunks <- unlist(parallel::mclapply(
         seq_along(by_chunk), extract_from_chunk, mc.preschedule = FALSE,
-        mc.cores = ncore, mc.silent = FALSE, mc.allow.recursive = FALSE)
+        mc.cores = ncore, mc.silent = FALSE, mc.allow.recursive = FALSE))
     pr(" [done]")
 
-    ## Label chunks as `chr<chromosome>_<chunk>'.
-    names(ds) <- paste0("chr", chr(names(by_chunk)),
-                        "_", chunk(names(by_chunk)))
+    if (extract_individuals)
+        file.remove(column_file)
 
     ## Warn if some snps could not be found in "their" chunks.
-    found_snps <- unique(unlist(lapply(ds, `[[`, 2L), use.names = FALSE))
-    snps_not_found_in_chunks <- setdiff(d$snp, found_snps)
     if (length(snps_not_found_in_chunks)) {
         not_there <- d$snp %in% snps_not_found_in_chunks
         warning("Some snps could not be found in the corresponding ",
@@ -323,8 +369,9 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
     ## Attach data frame with snps that could not be found to return
     ## value.  Mention the reason why a snp was not found in a
     ## `comment' column.
-    if (length(snps_not_in_chunkmap) |
-        length(snps_in_nonexistent_chunks) |
+    missing_snps <- NULL
+    if (length(snps_not_in_chunkmap) ||
+        length(snps_in_nonexistent_chunks) ||
         length(snps_not_found_in_chunks)) {
 
         cols <- c("snp", "chr", "chunk")
@@ -342,12 +389,11 @@ extract_snps <- function(snps, indir, chunkmap, chunkmap_cols = 1:3,
         d3$chunk   <- rep_len(NA_character_,     nrow(d3))
         d3$comment <- rep_len("not in chunkmap", nrow(d3))
 
-        d <- rbind(d1, d2, d3)
-        rownames(d) <- NULL
-        attr(ds, "missing_snps") <- d
+        missing_snps <- rbind(d1, d2, d3)
+        rownames(missing_snps) <- NULL
     }
 
     print(Sys.time() - t0)
 
-    ds
+    missing_snps
 }
