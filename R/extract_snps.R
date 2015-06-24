@@ -12,7 +12,9 @@ extract_snps <- function(snps, indir, outdir, chunkmap, idfile,
     ## Check for existence of mandatory arguments.
     force(indir)
     force(snps)
+    force(outdir)
     force(chunkmap)
+    force(idfile)
 
     ## Check that input directory exists.
     if (!is.directory(indir))
