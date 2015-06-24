@@ -18,6 +18,8 @@ extract_snps <- function(snps, indir, outdir, chunkmap, idfile,
     if (!is.directory(indir))
         stop("`indir' must be an existing directory with chunk files.")
 
+    if (is.factor(snps))
+        snps <- as.character(snps)
 
     if (missing(outdir))
         stop("You must specify an directory for output via `outdir'.")
@@ -51,6 +53,10 @@ extract_snps <- function(snps, indir, outdir, chunkmap, idfile,
         if (!all(chunkmap_cols %in% seq_len(ncol(chunkmap))))
             stop("`chunkmap_cols' must be a valid 3-element index for ",
                  "`chunkmap'.")
+
+        ## Convert factor snp ids to character.
+        if (is.factor(chunkmap[[chunkmap_cols[1L]]]))
+            chunkmap[[chunkmap_cols[1L]]] <- as.character(chunkmap[[chunkmap_cols[1L]]])
     }
     else if (is.character(chunkmap)) {
         chunkmap_files <- chunkmap
