@@ -166,7 +166,8 @@ region_plot <- function(file, x, y, start, end, label,
     axis(3, at = xat, cex.axis = xaxis_cex,
          labels = format(xat, scientific = FALSE, big.mark = ","))
     box()
-    title(main = main, line = 3)
+    if (!is.null(main))
+        title(main = main, line = 3)
 
     if (plot_regions) {
         ## Plot horizontal segments representing regions.
