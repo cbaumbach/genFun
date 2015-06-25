@@ -92,6 +92,8 @@ region_plot <- function(file, x, y, start, end, label,
                                     integer(1L))))
         stop("`start', `end', and `label' must have same length.")
 
+    plot_regions <- length(label) > 0L
+
     ## ===============================================================
     ## Graphical parameters.
     ## ===============================================================
@@ -118,14 +120,15 @@ region_plot <- function(file, x, y, start, end, label,
     ## ===============================================================
     ## Determine number of lines of region annotation.
     ## ===============================================================
-    tryCatch({
-        pdf("/dev/null", width = width)
-        plot(xlim, 0:1, type = "n")
-        par(cex = label_cex)
-        region <- arrange_regions(label = label, start = start, end = end)
-    }, finally = dev.off())
-
-    nlevel <- max(region$level)
+    if (plot_regions) {
+        tryCatch({
+            pdf("/dev/null", width = width)
+            plot(xlim, 0:1, type = "n")
+            par(cex = label_cex)
+            region <- arrange_regions(label = label, start = start, end = end)
+        }, finally = dev.off())
+    }
+    nlevel <- if (plot_regions) max(region$level) else 0L
 
     ## ===============================================================
     ## Compute device dimensions.
@@ -140,12 +143,19 @@ region_plot <- function(file, x, y, start, end, label,
     ## ===============================================================
     pdf(file, width, device_ht)
     on.exit(dev.off())
-    par(
-        mai = c(0, .5, 1, .5),          # no bottom margin
-        xaxs = "i"                      # inner x-axis
-    )
-
-    layout(matrix(1:2), heights = c(upper_frac, 1 - upper_frac))
+    if (plot_regions) {
+        par(
+            mai = c(0, .5, 1, .5),      # no bottom margin
+            xaxs = "i"                  # inner x-axis
+        )
+        layout(matrix(1:2), heights = c(upper_frac, 1 - upper_frac))
+    }
+    else {
+        par(
+            mai = c(.1, .5, 1, .5),     # small no bottom margin
+            xaxs = "i"                  # inner x-axis
+        )
+    }
 
     ## xy-plot in upper region.
     plot(x, y, xlim = xlim, ylim = ylim, cex = point_cex, axes = FALSE)
@@ -158,23 +168,25 @@ region_plot <- function(file, x, y, start, end, label,
     box()
     title(main = main, line = 3)
 
-    ## Plot horizontal segments representing regions.
-    par(
-        mai = c(0, .5, 0, .5),          # no bottom/top margin
-        xaxs = "i",                     # inner x-axis
-        yaxs = "i"                      # inner y-axis
-    )
-    plot(xlim[1L], 0, xlim = xlim, ylim = c(nlevel+.5, -.5),
-         ann = FALSE, axes = FALSE, type = "n")
-    segments(x0 = region$start, y0 = region$level, x1 = region$end,
-             col = col, xpd = NA, lwd = 2)
+    if (plot_regions) {
+        ## Plot horizontal segments representing regions.
+        par(
+            mai = c(0, .5, 0, .5),      # no bottom/top margin
+            xaxs = "i",                 # inner x-axis
+            yaxs = "i"                  # inner y-axis
+        )
+        plot(xlim[1L], 0, xlim = xlim, ylim = c(nlevel+.5, -.5),
+             ann = FALSE, axes = FALSE, type = "n")
+        segments(x0 = region$start, y0 = region$level, x1 = region$end,
+                 col = col, xpd = NA, lwd = 2)
 
-    ## Add labels.
-    text(x      = (region$start + region$end) / 2,
-         y      = region$level,
-         labels = region$label,
-         pos    = 3,
-         cex    = label_cex,
-         offset = .15,
-         xpd    = TRUE)
+        ## Add labels.
+        text(x      = (region$start + region$end) / 2,
+             y      = region$level,
+             labels = region$label,
+             pos    = 3,
+             cex    = label_cex,
+             offset = .15,
+             xpd    = TRUE)
+    }
 }
