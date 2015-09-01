@@ -71,9 +71,10 @@ arrange_regions <- function(label, start, end = start)
 ## |                   -----------        |
 ## +--------------------------------------+
 
-region_plot <- function(file, x, y, start, end, label,
-                        width, ymax = NULL, transform = NULL,
-                        col = "red", main = NULL)
+region_plot <- function(file, x, y, start, end, label, width,
+                        ymax = NULL, transform = NULL, col = NULL,
+                        main = NULL, special = NULL,
+                        special_col = NULL)
 {
     ## ===============================================================
     ## Argument checking.
@@ -158,7 +159,11 @@ region_plot <- function(file, x, y, start, end, label,
     }
 
     ## xy-plot in upper region.
-    plot(x, y, xlim = xlim, ylim = ylim, cex = point_cex, axes = FALSE)
+    the_col <- rep_len(if (is.null(col)) "black" else col, length(x))
+    if (!is.null(special) && !is.null(special_col))
+        the_col[special] <- special_col
+    plot(x, y, xlim = xlim, ylim = ylim, cex = point_cex,
+        axes = FALSE, col = the_col)
     axis(2, las = 1, hadj = 1, cex.axis = yaxis_cex)
     xat <- pretty(xlim, n = min(length(x), 10L))
     if (length(xat) >= 3L)
@@ -179,7 +184,7 @@ region_plot <- function(file, x, y, start, end, label,
         plot(xlim[1L], 0, xlim = xlim, ylim = c(nlevel+.5, -.5),
              ann = FALSE, axes = FALSE, type = "n")
         segments(x0 = region$start, y0 = region$level, x1 = region$end,
-                 col = col, xpd = NA, lwd = 2)
+                 xpd = NA, lwd = 2)
 
         ## Add labels.
         text(x      = (region$start + region$end) / 2,

@@ -9,7 +9,8 @@
 }
 \usage{
 region_plot(file, x, y, start, end, label, width, ymax = NULL,
-    transform = NULL, col = "red", main = NULL)
+    transform = NULL, col = NULL, main = NULL, special = NULL,
+    special_col = NULL)
 }
 \arguments{
   \item{file}{
@@ -34,10 +35,17 @@ region_plot(file, x, y, start, end, label, width, ymax = NULL,
     Function to be applied to y-coordinates before plotting.
   }
   \item{col}{
-    Color used to mark region ranges.
+    Color used to mark non-special points.
   }
   \item{main}{
     String used as plot title.
+  }
+  \item{special}{
+    Logical vector of same length as `x' and `y' indicating which points
+    should be drawn using `special_col'.
+  }
+  \item{special_col}{
+    Color used for points that are `special'.
   }
 }
 \value{
