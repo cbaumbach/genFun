@@ -99,8 +99,8 @@ region_plot <- function(file, x, y, start, end, label,
     ## ===============================================================
     label_cex <- .7                # size of region annotation labels
     point_cex <- .3                # size of points in plotting region
-    xaxis_cex <- .7                # size of x-axis labels
-    yaxis_cex <- .7                # size of y-axis labels
+    xaxis_cex <- label_cex         # size of x-axis labels
+    yaxis_cex <- label_cex         # size of y-axis labels
 
     ## ===============================================================
     ## Determine dimensions of upper part.
