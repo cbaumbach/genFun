@@ -12,5 +12,6 @@ export("chr",
        "print.gene_ontology",
        "read.gene_ontology",
        "read.obo",
+       "region_plot",
        "snptest",
        "unslash")

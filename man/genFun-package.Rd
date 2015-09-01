@@ -30,6 +30,7 @@ combine_snptest   Summarize and combine snptest output by chromosome
 extract_snps      Extract snps from imputed chunk files
 find_genes        Map SNPs to genes
 int2chr           Convert chromosome from integer to string
+region_plot       Create region plot as pdf
 snptest           Run snptest gwas on multiple cores
 unslash           Remove trailing slash from directory names
 }
