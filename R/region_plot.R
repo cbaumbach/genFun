@@ -73,7 +73,8 @@ arrange_regions <- function(label, start, end = start)
 
 region_plot <- function(file, x, y, start, end, label, width,
                         ymax = NULL, transform = NULL, col = NULL,
-                        main = NULL)
+                        main = NULL, upper_hook = NULL,
+                        lower_hook = NULL)
 {
     ## ===============================================================
     ## Argument checking.
@@ -170,6 +171,8 @@ region_plot <- function(file, x, y, start, end, label, width,
     box()
     if (!is.null(main))
         title(main = main, line = 3)
+    if (!is.null(upper_hook))
+        upper_hook(x, y, start, end, label)
 
     if (plot_regions) {
         ## Plot horizontal segments representing regions.
@@ -191,5 +194,8 @@ region_plot <- function(file, x, y, start, end, label, width,
              cex    = label_cex,
              offset = .15,
              xpd    = TRUE)
+
+        if (!is.null(lower_hook))
+            lower_hook(x, y, start, end, label)
     }
 }

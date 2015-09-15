@@ -9,7 +9,8 @@
 }
 \usage{
 region_plot(file, x, y, start, end, label, width, ymax = NULL,
-    transform = NULL, col = NULL, main = NULL)
+    transform = NULL, col = NULL, main = NULL, upper_hook = NULL,
+    lower_hook = NULL)
 }
 \arguments{
   \item{file}{
@@ -38,6 +39,15 @@ region_plot(file, x, y, start, end, label, width, ymax = NULL,
   }
   \item{main}{
     String used as plot title.
+  }
+  \item{upper_hook}{
+    Function that will be called right after the upper part of the plot
+    is created.  Its arguments correspond to `x', `y', `start', `end',
+    and `label'.
+  }
+  \item{lower_hook}{
+    Same as `upper_hook' except that the function is called right after
+    the lower part of the plot is created.
   }
 }
 \value{
