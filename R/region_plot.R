@@ -74,7 +74,7 @@ arrange_regions <- function(label, start, end = start)
 region_plot <- function(file, x, y, start, end, label, width,
                         ymax = NULL, transform = NULL, col = NULL,
                         main = NULL, upper_hook = NULL,
-                        lower_hook = NULL)
+                        lower_hook = NULL, point_cex = .3)
 {
     ## ===============================================================
     ## Argument checking.
