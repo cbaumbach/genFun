@@ -74,7 +74,8 @@ arrange_regions <- function(label, start, end = start)
 region_plot <- function(file, x, y, start, end, label, width,
                         ymax = NULL, transform = NULL, col = NULL,
                         main = NULL, upper_hook = NULL,
-                        lower_hook = NULL, point_cex = .3)
+                        lower_hook = NULL, point_cex = .3,
+                        pch = 1L)
 {
     ## ===============================================================
     ## Argument checking.
@@ -161,7 +162,7 @@ region_plot <- function(file, x, y, start, end, label, width,
     ## xy-plot in upper region.
     the_col <- rep_len(if (is.null(col)) "black" else col, length(x))
     plot(x, y, xlim = xlim, ylim = ylim, cex = point_cex,
-        axes = FALSE, col = the_col)
+        axes = FALSE, col = the_col, pch = pch)
     axis(2, las = 1, hadj = 1, cex.axis = yaxis_cex)
     xat <- pretty(xlim, n = min(length(x), 10L))
     if (length(xat) >= 3L)

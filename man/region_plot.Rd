@@ -10,7 +10,7 @@
 \usage{
 region_plot(file, x, y, start, end, label, width, ymax = NULL,
     transform = NULL, col = NULL, main = NULL, upper_hook = NULL,
-    lower_hook = NULL, point_cex = .3)
+    lower_hook = NULL, point_cex = .3, pch = 1L)
 }
 \arguments{
   \item{file}{
@@ -51,6 +51,9 @@ region_plot(file, x, y, start, end, label, width, ymax = NULL,
   }
   \item{point_cex}{
     Factor by which points in plot are magnified.
+  }
+  \item{pch}{
+    Character/symbol used for points (see \code{\link[graphics]{points}}).
   }
 }
 \value{
