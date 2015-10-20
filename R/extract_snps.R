@@ -77,17 +77,14 @@ extract_snps <- function(snps, indir, outdir, chunkmap, idfile,
     if (length(snps) == 0L)
         stop("You must specify at least 1 snp in `snps'.")
 
+    ## Read individual ids.
+    if (!file.exists(idfile))
+        stop("`idfile' doesn't exist.")
+    ids <- scan(idfile, character(), quiet = TRUE)
+
     ## Check that `keep' and `idfile' are consistent.
     extract_individuals <- FALSE
     if (length(keep)) {
-        if (is.null(idfile))
-            stop("`idfile' missing.")
-
-        if (!file.exists(idfile))
-            stop("`idfile' doesn't exist.")
-
-        ids <- scan(idfile, character(), quiet = TRUE)
-
         not_there <- ! keep %in% ids
         if (any(not_there))
             stop("Some ids from `keep' are not among the ids in ",
