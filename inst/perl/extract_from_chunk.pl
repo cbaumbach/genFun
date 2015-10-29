@@ -78,8 +78,9 @@ while (my $line = <$zin>) {
 
     if ($selected{$snp}) {
         if (@columns) {
+            chomp($line);
             my @fields = split / /, $line;
-            print $zout join(' ', @fields[@columns]);
+            print $zout join(' ', @fields[@columns]), "\n";
         }
         else {
             print $zout $line;
