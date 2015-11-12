@@ -74,3 +74,19 @@ test_that("0|0 -> empty[empty,empty] -> empty", {
 test_that("empty|empty -> empty[empty,empty] -> empty", {
     expect_equal(count_per_gene(integer(), integer(), integer(), integer(), integer()), integer())
 })
+
+test_that("0|'0' -> 0[0,0] -> 1", {
+    expect_equal(count_per_gene("0", 0, 0, 0, 0), 1)
+})
+
+test_that("0|0 -> 0['0',0] -> 1", {
+    expect_equal(count_per_gene(0, 0, "0", 0, 0), 1)
+})
+
+test_that("0|0 -> 0[0,'0'] -> 1", {
+    expect_equal(count_per_gene(0, 0, 0, "0", 0), 1)
+})
+
+test_that("0|0 -> 0['0','0'] -> 1", {
+    expect_equal(count_per_gene(0, 0, "0", "0", 0), 1)
+})

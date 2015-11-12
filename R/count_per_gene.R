@@ -8,6 +8,12 @@ count_per_gene <- function(pos, chr, gene_start, gene_end, gene_chr)
         return(rep_len(0L, length(gene_start)))
     if (length(gene_start) == 0L)
         return(integer())
+    if (typeof(pos) != "integer")
+        pos <- as.integer(pos)
+    if (typeof(gene_start) != "integer")
+        gene_start <- as.integer(gene_start)
+    if (typeof(gene_end) != "integer")
+        gene_end <- as.integer(gene_end)
     count <- function(idx) {
         current_chr <- gene_chr[idx][1L]
         positions <- pos[chr == current_chr]
