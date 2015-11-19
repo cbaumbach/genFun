@@ -27,6 +27,10 @@ count_per_gene(pos, chr, gene_start, gene_end, gene_chr)
     chromosome numbers of gene intervals
   }
 }
+\details{
+If `pos`, `gene_start`, or `gene_end` are not of type "integer", they
+are internally converted via \code{\link[base]{as.integer}}.
+}
 \value{
 An integer vector of the same length as `gene_start` containing the
 number of points falling into each of the gene intervals.
