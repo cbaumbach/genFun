@@ -64,3 +64,26 @@ test_that("0|0 -> empty[empty,empty] -> empty", {
 test_that("empty|empty -> empty[empty,empty] -> empty", {
     expect_equal(f(integer(), integer(), integer(), integer(), integer()), integer())
 })
+
+test_that("chromosomes don't need to be ordered", {
+    intervals <- read.table(text = "
+# chromosomes 1-3, intervals: [0,10], [20,30], [40,50]
+chr  start  end
+1     0     10
+2    20     30
+1    40     50
+3     0     10
+1    20     30
+3    40     50
+2     0     10
+3    20     30
+2    40     50
+", header = TRUE, stringsAsFactor = FALSE)
+    points_on_one_chr <- seq(0L, 50L, 5L)
+    points <- data.frame(pos = rep(points_on_one_chr, each = 3L), chr = 1:3)
+    points_per_interval <- 3L
+    intervals$expected <- points_per_interval
+    intervals$actual <- f(points$pos, points$chr,
+        intervals$start, intervals$end, intervals$chr)
+    expect_equal(intervals$actual, intervals$expected)
+})
