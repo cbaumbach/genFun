@@ -1,15 +1,22 @@
 Package: genFun
 Type: Package
-Title: Functions for dealing with genetic data
-SystemRequirements: perl
-Version: 1.0
-Date: 2015-03-04
-Author: Clemens Baumbach
-Maintainer: Clemens Baumbach <clemens.baumbach@helmholtz-muenchen.de>
-Suggests: testthat
-Depends: miscFun (>= 1.0), treeFun (>= 1.0)
-Imports: parallel, data.table
+Title: Functions For Dealing With Genetic Data
 Description: This is a collection of functions which, if not for this
-             package, I would have to rewrite or copy/paste for almost
-             every R script dealing with genetic data that I write.
+    package, I would have to rewrite or copy/paste for almost every R
+    script dealing with genetic data that I write.
+Version: 0.0.0.9000
+Date: 2015-11-18
+Authors@R: person("Clemens", "Baumbach", role = c("aut", "cre"),
+    email = "clemens.baumbach@gmx.net")
+Suggests:
+    testthat,
+    microbenchmark
+Depends:
+    miscFun (>= 0.0.0.9000),
+    treeFun (>= 0.0.0.9000)
+Imports:
+    parallel,
+    data.table
+SystemRequirements:
+    perl
 License: GPL (>= 2)
