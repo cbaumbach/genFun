@@ -6,7 +6,7 @@ convert_to_dosages <- function(aMatrix,
         additive  = c(0L, 1L, 2L),
         recessive = c(0L, 0L, 1L),
         dominant  = c(0L, 1L, 1L))
-    if (in_terms_of_allele == "A")
+    if (in_terms_of_allele[1L] == "A")
         weights <- rev(weights)
     row_to_dosages <- function(aRow) {
         y <- aRow * weights

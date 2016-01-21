@@ -101,3 +101,17 @@ test_that("[NA** 001] -> [NA 2]", expect(from(NA,0,0, 0,0,1), to(c(NA, 2))))
 test_that("[NA**][001] -> [NA][2]", {
     expect_equal(f(rbind(c(NA,0,0), c(0,0,1))), rbind(NA, 2))
 })
+
+# ====================================================================
+context("convert to dosages: default value for in_terms_of")
+
+test_that("there is no warning if in_terms_of is not specified", {
+    no_warning <- function() {
+        tryCatch({
+            convert_to_dosages(rbind(.1,.2,.7))
+            TRUE
+        }, warning = function(c) FALSE, error = function(c) FALSE)
+    }
+
+    expect_true(no_warning())
+})
