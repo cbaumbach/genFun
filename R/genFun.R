@@ -2,7 +2,7 @@
 
 find_genes <- function(d, genes, chr1 = "chr", pos = "pos", out = "genes",
                        chr2 = chr1, start = "start", end = "end",
-                       id = "id")
+                       id = "id", quiet = FALSE)
 {
     ## Check whether all required column are present.
     names1 <- names(d)
@@ -30,7 +30,8 @@ find_genes <- function(d, genes, chr1 = "chr", pos = "pos", out = "genes",
 
     d[[out]] <- NA
     for (k in sort(unique(d[[chr1]]))) {
-        pr("Chromosome ", k)
+        if (!quiet)
+            pr("Chromosome ", k)
         idx <- d[[chr1]] == k
         idx[is.na(idx)] <- FALSE
         gidx <- genes[[chr2]] == k
@@ -39,7 +40,8 @@ find_genes <- function(d, genes, chr1 = "chr", pos = "pos", out = "genes",
             d[[pos]][idx],
             genes[[start]][gidx],
             genes[[end]][gidx],
-            genes[[id]][gidx])
+            genes[[id]][gidx],
+            quiet = quiet)
     }
     d[[out]][d[[out]] == ""] <- NA
     d

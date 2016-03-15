@@ -11,7 +11,8 @@
 }
 \usage{
 find_genes(d, genes, chr1 = "chr", pos = "pos", out = "genes",
-           chr2 = chr1, start = "start", end = "end", id = "id")
+           chr2 = chr1, start = "start", end = "end", id = "id",
+           quiet = FALSE)
 }
 \arguments{
   \item{d}{
@@ -43,6 +44,9 @@ find_genes(d, genes, chr1 = "chr", pos = "pos", out = "genes",
     Name of column in `genes' containing gene identifiers that will
     appear in the comma-separated lists of the new column `out' in the
     output data frame.
+  }
+  \item{quiet}{
+    If FALSE (default) progress messages are printed to the screen.
   }
 }
 \details{

@@ -26,7 +26,7 @@ test_that("everything works fine in the vanilla use case", {
     rs4 3 4 NA
     ", header = TRUE, stringsAsFactors = FALSE)
 
-    expect_that(find_genes(d, genes), equals(dout))
+    expect_that(find_genes(d, genes, quiet = TRUE), equals(dout))
 })
 
 test_that("missing values in snp data frame are propagated", {
@@ -55,7 +55,7 @@ test_that("missing values in snp data frame are propagated", {
     rs4 3 4 NA
     ", header = TRUE, stringsAsFactors = FALSE)
 
-    expect_that(find_genes(d, genes), equals(dout))
+    expect_that(find_genes(d, genes, quiet = TRUE), equals(dout))
 })
 
 test_that("NAs in genes data frame are ignored", {
@@ -84,7 +84,7 @@ test_that("NAs in genes data frame are ignored", {
     rs4 3 4 NA
     ", header = TRUE, stringsAsFactors = FALSE)
 
-    expect_that(find_genes(d, genes), equals(dout))
+    expect_that(find_genes(d, genes, quiet = TRUE), equals(dout))
 })
 
 test_that("missing columns throw an error", {
@@ -153,10 +153,10 @@ test_that("missing columns throw an error", {
     g4 4 1 5
     ", header = TRUE, stringsAsFactors = FALSE)
 
-    expect_that(find_genes(d_chr1, genes),  throws_error("column missing in d: chr"))
-    expect_that(find_genes(d_pos,  genes),  throws_error("column missing in d: pos"))
-    expect_that(find_genes(d, genes_chr),   throws_error("column missing in genes: chr"))
-    expect_that(find_genes(d, genes_start), throws_error("column missing in genes: start"))
-    expect_that(find_genes(d, genes_end),   throws_error("column missing in genes: end"))
-    expect_that(find_genes(d, genes_id),    throws_error("column missing in genes: id"))
+    expect_that(find_genes(d_chr1, genes, quiet = TRUE),  throws_error("column missing in d: chr"))
+    expect_that(find_genes(d_pos,  genes, quiet = TRUE),  throws_error("column missing in d: pos"))
+    expect_that(find_genes(d, genes_chr, quiet = TRUE),   throws_error("column missing in genes: chr"))
+    expect_that(find_genes(d, genes_start, quiet = TRUE), throws_error("column missing in genes: start"))
+    expect_that(find_genes(d, genes_end, quiet = TRUE),   throws_error("column missing in genes: end"))
+    expect_that(find_genes(d, genes_id, quiet = TRUE),    throws_error("column missing in genes: id"))
 })
