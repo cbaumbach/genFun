@@ -9,8 +9,7 @@ Date: 2015-11-18
 Authors@R: person("Clemens", "Baumbach", role = c("aut", "cre"),
     email = "clemens.baumbach@gmx.net")
 Suggests:
-    testthat,
-    microbenchmark
+    testthat
 Depends:
     miscFun (>= 0.0.0.9000),
     treeFun (>= 0.0.0.9000)
