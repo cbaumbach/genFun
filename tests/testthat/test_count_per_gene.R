@@ -66,7 +66,7 @@ test_that("empty|empty -> empty[empty,empty] -> empty", {
 })
 
 test_that("chromosomes don't need to be ordered", {
-    intervals <- read.table(text = "
+    intervals <- utils::read.table(text = "
 # chromosomes 1-3, intervals: [0,10], [20,30], [40,50]
 chr  start  end
 1     0     10

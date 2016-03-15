@@ -29,8 +29,8 @@ test_that("extract_snps works", {
 
     stopifnot(all(file.exists(infiles)))
 
-    din1 <- read.table(gzfile(infiles[1L]), stringsAsFactors = FALSE)
-    din2 <- read.table(gzfile(infiles[2L]), stringsAsFactors = FALSE)
+    din1 <- utils::read.table(gzfile(infiles[1L]), stringsAsFactors = FALSE)
+    din2 <- utils::read.table(gzfile(infiles[2L]), stringsAsFactors = FALSE)
 
     ## After a leading set of 5 columns, individual-specific genotype
     ## probabilities come in triples.
@@ -55,8 +55,8 @@ test_that("extract_snps works", {
     expect_that(is.null(missing_snps), is_true())
     stopifnot(all(file.exists(outfiles)))
 
-    dout1 <- read.table(gzfile(outfiles[1L]), stringsAsFactors = FALSE)
-    dout2 <- read.table(gzfile(outfiles[2L]), stringsAsFactors = FALSE)
+    dout1 <- utils::read.table(gzfile(outfiles[1L]), stringsAsFactors = FALSE)
+    dout2 <- utils::read.table(gzfile(outfiles[2L]), stringsAsFactors = FALSE)
 
     file.remove(outfiles)
 
@@ -69,7 +69,7 @@ test_that("extract_snps works", {
     ## Test 2: reading chunkmap table with snp as factor column
     ## ---------------------------------------------------------------
 
-    chunkmap <- read.table(chunkmap_file, header = TRUE)
+    chunkmap <- utils::read.table(chunkmap_file, header = TRUE)
 
     stopifnot(is.factor(chunkmap$rsid))
 
@@ -86,8 +86,8 @@ test_that("extract_snps works", {
     expect_that(is.null(missing_snps), is_true())
     stopifnot(all(file.exists(outfiles)))
 
-    dout1 <- read.table(gzfile(outfiles[1L]), stringsAsFactors = FALSE)
-    dout2 <- read.table(gzfile(outfiles[2L]), stringsAsFactors = FALSE)
+    dout1 <- utils::read.table(gzfile(outfiles[1L]), stringsAsFactors = FALSE)
+    dout2 <- utils::read.table(gzfile(outfiles[2L]), stringsAsFactors = FALSE)
 
     file.remove(outfiles)
 
@@ -100,7 +100,7 @@ test_that("extract_snps works", {
     ## Test 3: specifying snps as factor
     ## ---------------------------------------------------------------
 
-    chunkmap <- read.table(chunkmap_file, stringsAsFactor = FALSE, header = TRUE)
+    chunkmap <- utils::read.table(chunkmap_file, stringsAsFactor = FALSE, header = TRUE)
 
     missing_snps <- extract_snps(
         snps   = as.factor(snps),       # snps of class factor
@@ -115,8 +115,8 @@ test_that("extract_snps works", {
     expect_that(is.null(missing_snps), is_true())
     stopifnot(all(file.exists(outfiles)))
 
-    dout1 <- read.table(gzfile(outfiles[1L]), stringsAsFactors = FALSE)
-    dout2 <- read.table(gzfile(outfiles[2L]), stringsAsFactors = FALSE)
+    dout1 <- utils::read.table(gzfile(outfiles[1L]), stringsAsFactors = FALSE)
+    dout2 <- utils::read.table(gzfile(outfiles[2L]), stringsAsFactors = FALSE)
 
     file.remove(outfiles)
 
