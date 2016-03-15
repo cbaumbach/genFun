@@ -1,7 +1,8 @@
 extract_snps <- function(snps, indir, outdir, chunkmap, idfile,
                          keep = NULL, chunkmap_cols = 1:3,
                          pattern = "\\.gz$", ncore = 1L,
-                         chr_chunk = ".*chr([^_]+)_(\\d+)")
+                         chr_chunk = ".*chr([^_]+)_(\\d+)",
+                         quiet = FALSE)
 {
     t0 <- Sys.time()                    # record starting time
 
@@ -197,8 +198,8 @@ extract_snps <- function(snps, indir, outdir, chunkmap, idfile,
         chunkmap <- take_3_columns(chunkmap)
     }
     else {
-        pr("Reading `chunkmap' file",
-           if (length(chunkmap_files) > 1L) "s", " ...")
+        if (!quiet)
+            pr("Reading `chunkmap' file", if (length(chunkmap_files) > 1L) "s", " ...")
         chunkmap <- do.call(
             rbind, parallel::mclapply(chunkmap_files, take_3_columns,
                                       mc.cores = ncore,
@@ -219,7 +220,8 @@ extract_snps <- function(snps, indir, outdir, chunkmap, idfile,
     ## Map snps to chunk files.
     ## =================================================================
 
-    pr("Mapping snps to chunk files ...")
+    if (!quiet)
+        pr("Mapping snps to chunk files ...")
     d <- merge(chunkmap, files, by = c("chr", "chunk"))
 
     not_there <- ! chunkmap$snp %in% d$snp
@@ -346,15 +348,18 @@ extract_snps <- function(snps, indir, outdir, chunkmap, idfile,
         snps_not_found
     }
 
-    pr("Using ", ncore, " core", if (ncore > 1) "s", " to search ",
-       length(snps), " snp", if (length(snps) > 1) "s", " in ",
-       length(by_chunk), " chunk", if (length(by_chunk) > 1) "s")
+    if (!quiet)
+        pr("Using ", ncore, " core", if (ncore > 1) "s", " to search ",
+           length(snps), " snp", if (length(snps) > 1) "s", " in ",
+           length(by_chunk), " chunk", if (length(by_chunk) > 1) "s")
 
-    pr1("Chunks: ")
+    if (!quiet)
+        pr1("Chunks: ")
     snps_not_found_in_chunks <- unlist(parallel::mclapply(
         seq_along(by_chunk), extract_from_chunk, mc.preschedule = FALSE,
-        mc.cores = ncore, mc.silent = FALSE, mc.allow.recursive = FALSE))
-    pr(" [done]")
+        mc.cores = ncore, mc.silent = quiet, mc.allow.recursive = FALSE))
+    if (!quiet)
+        pr(" [done]")
 
     if (extract_individuals)
         file.remove(column_file)
@@ -398,7 +403,8 @@ extract_snps <- function(snps, indir, outdir, chunkmap, idfile,
         rownames(missing_snps) <- NULL
     }
 
-    print(Sys.time() - t0)
+    if (!quiet)
+        print(Sys.time() - t0)
 
     missing_snps
 }

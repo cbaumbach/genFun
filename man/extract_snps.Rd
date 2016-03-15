@@ -10,7 +10,7 @@
 \usage{
 extract_snps(snps, indir, outdir, chunkmap, idfile, keep = NULL,
              chunkmap_cols = 1:3, pattern = "\\\\.gz$", ncore = 1L,
-             chr_chunk = ".*chr([^_]+)_(\\\\d+)")
+             chr_chunk = ".*chr([^_]+)_(\\\\d+)", quiet = FALSE)
 }
 \arguments{
   \item{snps}{
@@ -47,6 +47,9 @@ extract_snps(snps, indir, outdir, chunkmap, idfile, keep = NULL,
   \item{chr_chunk}{
     Extended regular expression with two parenthesized subexpressions
     matching chromosome and chunk number in input chunk file names.
+  }
+  \item{quiet}{
+    If FALSE (default) progress messages are printed to the screen.
   }
 }
 \details{

@@ -50,7 +50,8 @@ test_that("extract_snps works", {
         idfile = idfile,
         ncore  = 2L,
         chunkmap = chunkmap_file,
-        chunkmap_cols = c(1L, 2L, 4L))
+        chunkmap_cols = c(1L, 2L, 4L),
+        quiet = TRUE)
 
     expect_that(is.null(missing_snps), is_true())
     stopifnot(all(file.exists(outfiles)))
@@ -81,7 +82,8 @@ test_that("extract_snps works", {
         idfile = idfile,
         ncore  = 2L,
         chunkmap = chunkmap,            # snp column of class factor
-        chunkmap_cols = c(1L, 2L, 4L))
+        chunkmap_cols = c(1L, 2L, 4L),
+        quiet = TRUE)
 
     expect_that(is.null(missing_snps), is_true())
     stopifnot(all(file.exists(outfiles)))
@@ -110,7 +112,8 @@ test_that("extract_snps works", {
         idfile = idfile,
         ncore  = 2L,
         chunkmap = chunkmap,
-        chunkmap_cols = c(1L, 2L, 4L))
+        chunkmap_cols = c(1L, 2L, 4L),
+        quiet = TRUE)
 
     expect_that(is.null(missing_snps), is_true())
     stopifnot(all(file.exists(outfiles)))
