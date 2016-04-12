@@ -115,3 +115,31 @@ test_that("there is no warning if in_terms_of is not specified", {
 
     expect_true(no_warning())
 })
+
+# ====================================================================
+context("convert_to_dosages: transpose")
+
+f <- function(m) convert_to_dosages(m, "additive", transpose = TRUE)
+
+test_that("[100] -> [0]", expect(from(1,0,0), to(0)))
+test_that("[010] -> [1]", expect(from(0,1,0), to(1)))
+test_that("[001] -> [2]", expect(from(0,0,1), to(2)))
+
+test_that("[.1 .2 .7] -> [1.6]", expect(from(.1,.2,.7), to(1.6)))
+
+test_that("[100 100] -> [00]", {
+    expect_equal(f(rbind(c(1,0,0, 1,0,0))), cbind(c(0,0)))
+})
+
+test_that("[100][100] -> [0][0]", {
+    expect_equal(f(rbind(c(1,0,0),
+                         c(1,0,0))),
+        cbind(0, 0))
+})
+
+test_that("[100 010 001][001 010 100] -> [012][210]", {
+    expect_equal(f(rbind(c(1,0,0, 0,1,0, 0,0,1),
+                         c(0,0,1, 0,1,0, 1,0,0))),
+        cbind(c(0,1,2),
+              c(2,1,0)))
+})
