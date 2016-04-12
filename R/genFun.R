@@ -86,6 +86,10 @@ chr <- function(xs, pattern = ".*chr([^_]+)")
     maybe(as.integer, submatch(pattern, xs, drop = TRUE))
 }
 
+single_quote <- function(x) {
+    paste0("'", x, "'")
+}
+
 chunk <- function(xs, pattern = ".*chr[^_]+_(\\d+)")
 {
     if (nsubexp(pattern) != 1L)
